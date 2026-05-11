@@ -1,60 +1,29 @@
-# La Malédiction de Drakenhall
+# La Malédiction de Drakenhall — V2
 
-**La Malédiction de Drakenhall** est un jeu original de type **livre-jeu RPG** : paragraphes numérotés, choix, dés, combats, mana, dextérité, apprentissage de sorts et inventaire.
+Jeu original de type **livre-jeu RPG** : paragraphes numérotés, choix, dés, combats, mana, sorts, inventaire et sauvegarde automatique.
 
-## Lancer le jeu en local
+## Nouveautés V2
+
+- Sauvegarde automatique dans le navigateur
+- Bouton **Continuer**
+- Capacité **Force**
+- Capacité **Chance**
+- Tirage des caractéristiques aux dés en début de partie
+- Illustrations intégrées aux passages importants
+- Illustrations pendant les combats
+- Combats améliorés avec attaque, sorts, soins et tentative de chance
+
+## Installation
 
 ```bash
 npm install
 npm run dev
 ```
 
-Puis ouvrir l'adresse affichée dans le terminal, souvent :
+## Déploiement Vercel
 
-```text
-http://localhost:5173
-```
+- Framework : Vite
+- Build command : `npm run build`
+- Output directory : `dist`
 
-## Construire la version finale
-
-```bash
-npm run build
-```
-
-Le site final sera généré dans le dossier `dist/`.
-
-## Hébergement recommandé : Vercel
-
-1. Créer un dépôt GitHub.
-2. Envoyer ce dossier sur GitHub.
-3. Aller sur Vercel.
-4. Cliquer sur **Add New Project**.
-5. Importer le dépôt GitHub.
-6. Vercel détecte automatiquement Vite.
-7. Cliquer sur **Deploy**.
-
-## Structure du projet
-
-```text
-la-malediction-de-drakenhall/
-├── index.html
-├── package.json
-├── postcss.config.js
-├── tailwind.config.js
-├── vercel.json
-├── public/
-│   └── assets/
-│       └── illustrations du jeu
-└── src/
-    ├── App.jsx
-    ├── main.jsx
-    └── index.css
-```
-
-## Vérification
-
-Le projet a été testé avec `npm run build` : la compilation Vite fonctionne.
-
-## Notes
-
-Le jeu est conçu pour être jouable sur téléphone : interface responsive, boutons larges, texte lisible, feuille d'aventure sur le côté ou sous le texte selon l'écran.
+> Conseil : ne versionnez pas `package-lock.json` si Vercel bloque l’installation des dépendances.
