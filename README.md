@@ -1,19 +1,19 @@
-# La Malédiction de Drakenhall — V2
+# Les Cendres d’Astréa — Version finale
 
-Jeu original de type **livre-jeu RPG** : paragraphes numérotés, choix, dés, combats, mana, sorts, inventaire et sauvegarde automatique.
+Trilogie de livre-jeu RPG web inspirée des livres dont vous êtes le héros.
 
-## Nouveautés V2
+## Contenu
 
-- Sauvegarde automatique dans le navigateur
-- Bouton **Continuer**
-- Capacité **Force**
-- Capacité **Chance**
-- Tirage des caractéristiques aux dés en début de partie
-- Illustrations intégrées aux passages importants
-- Illustrations pendant les combats
-- Combats améliorés avec attaque, sorts, soins et tentative de chance
+- 3 livres jouables.
+- 300 paragraphes minimum par livre, soit 900 paragraphes générés/structurés.
+- Combats, boss, quêtes, secrets et choix à embranchements.
+- Sauvegarde locale dans le navigateur.
+- Force, Dextérité, Chance, Esprit, PV, Mana.
+- Mémoire, Corruption, Réputation.
+- Sorts, inventaire, alliés, codes de fin.
+- Illustrations en style dessin papier noir et blanc.
 
-## Installation
+## Installation locale
 
 ```bash
 npm install
@@ -22,8 +22,18 @@ npm run dev
 
 ## Déploiement Vercel
 
-- Framework : Vite
-- Build command : `npm run build`
-- Output directory : `dist`
+1. Uploade tous les fichiers sur GitHub.
+2. Ne mets pas de `package-lock.json`.
+3. Vercel détecte Vite automatiquement.
+4. Build command : `npm run build`.
+5. Output directory : `dist`.
 
-> Conseil : ne versionnez pas `package-lock.json` si Vercel bloque l’installation des dépendances.
+## Images
+
+Les illustrations sont dans :
+
+```text
+public/assets/illustrations/
+```
+
+Tu peux remplacer les images par d’autres en gardant les mêmes noms de fichiers.
