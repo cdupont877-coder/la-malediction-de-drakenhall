@@ -194,21 +194,30 @@ function generatedPassage(bookId, id, hero) {
     }
   }
 
-  let text = `Vous avancez dans ${zone.name}. Ici, ${zone.theme}. Le passage ${String(id).padStart(3, '0')} n’est pas une simple étape : c’est une décision de plus dans une guerre qui vous dépasse.\n\n`
+  const introTemplates = [
+    `La route vous mène vers ${zone.name}. Autour de vous, ${zone.theme}. Rien ne paraît vraiment sûr, pas même le silence.\n\n`,
+    `Dans ${zone.name}, l’air semble plus lourd. ${zone.theme}. Vous avancez avec la sensation que chaque bruit peut annoncer une menace.\n\n`,
+    `Vous progressez à travers ${zone.name}. Les traces de guerre, de peur et de magie noire se mêlent aux lieux : ${zone.theme}.\n\n`,
+    `Le décor change peu à peu. ${zone.name} s’étend devant vous, marqué par ${zone.theme}. Vous resserrez votre prise sur votre arme.\n\n`,
+    `Une nouvelle portion du voyage commence dans ${zone.name}. Ici, ${zone.theme}. Les ombres semblent garder leurs propres secrets.\n\n`,
+    `Vous poursuivez votre route dans ${zone.name}. Les lieux portent encore les cicatrices de ce monde brisé : ${zone.theme}.\n\n`,
+  ]
+  let text = introTemplates[(id + bookId) % introTemplates.length]
 
   if (isBoss) {
-    text += `La route se ferme devant vous. ${boss} apparaît, entouré de fumée et de silence. Sa présence semble reconnaître la marque qui brûle à votre poignet. Ce combat peut changer la suite de l’aventure.`
-    return { title: boss, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, boss, true), choices: [] }
+    text += `La route se ferme devant vous. ${boss} apparaît, entouré de fumée et de silence. Sa présence semble reconnaître la marque qui brûle à votre poignet. Ce passage est bloquant : il faut vaincre ce boss pour poursuivre.`
+    return { title: boss, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, boss, true), blocking: true, choices: [] }
   }
 
   if (isCombat) {
-    text += `Un danger surgit avant que vous puissiez reprendre votre souffle : ${enemy}. Vous pouvez combattre, tenter une manœuvre risquée ou chercher une issue plus discrète.`
+    text += `Un danger surgit avant que vous puissiez reprendre votre souffle : ${enemy}. Cette rencontre bloque votre progression : vous devez la résoudre par le combat, la fuite ou la parole. Impossible de simplement changer de route tant que la menace vous fait face.`
     return {
-      title: `Combat — ${enemy}`, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, enemy, false),
+      title: `Rencontre — ${enemy}`, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, enemy, false), blocking: true,
       choices: [
-        { label: 'Affronter le danger', combat: true },
-        { label: 'Chercher une faille dans le terrain', test: 'dex', dc, success: branch, fail: id },
-        { label: 'Utiliser votre chance pour éviter l’affrontement', test: 'chance', dc: dc + 1, success: next, fail: id },
+        { label: `Combattre ${enemy}`, combat: true },
+        { label: 'Tenter de fuir — test de Dextérité', test: 'dex', dc: dc + 2, success: next, failCombat: true },
+        { label: 'Tenter de parlementer ou distraire — test d’Esprit', test: 'esprit', dc: dc + 2, success: branch, failCombat: true },
+        { label: 'Tenter un coup de chance', test: 'chance', dc: dc + 2, success: next, failCombat: true },
       ]
     }
   }
@@ -249,9 +258,20 @@ function generatedPassage(bookId, id, hero) {
     }
   }
 
-  text += `Le chemin se divise. Une voie semble directe, l’autre plus dangereuse mais riche en découvertes. Vous sentez que la mémoire, la corruption et la réputation pèseront bientôt autant que votre lame.`
+  const sceneTextTemplates = [
+    `Le chemin se divise devant vous. La voie la plus courte paraît praticable, mais les traces qui s’enfoncent à l’écart promettent peut-être des réponses que personne ne vous offrira gratuitement.`,
+    `Un bruit sec retentit un peu plus loin. Branche cassée, pas maladroit ou piège volontaire : impossible de le savoir sans vous approcher.`,
+    `Vous remarquez une marque presque effacée sur la pierre. Elle ne ressemble pas aux signes des royaumes, mais quelque chose en elle vous paraît étrangement familier.`,
+    `La route principale continue vers l’obscurité. Sur le côté, un passage plus étroit disparaît entre les ruines et les ronces.`,
+    `Le vent apporte une odeur de fumée froide. Quelqu’un est passé ici avant vous, et rien ne garantit qu’il soit encore loin.`,
+    `Un silence inhabituel tombe sur les lieux. Même les corbeaux semblent attendre votre décision.`,
+    `Le sol garde plusieurs empreintes récentes. Certaines sont humaines, d’autres beaucoup moins rassurantes.`,
+    `Une intuition vous retient. Continuer serait simple, mais les détours sont parfois les seuls chemins vers la vérité.`,
+  ]
+  text += sceneTextTemplates[(id * 3 + bookId) % sceneTextTemplates.length]
+  const sceneTitles = ['Le chemin divisé', 'Une trace dans la boue', 'Le souffle du danger', 'La route des ombres', 'Un choix sous la cendre', 'L’indice oublié', 'La voie dangereuse', 'Le détour des survivants']
   return {
-    title: `Paragraphe ${String(id).padStart(3, '0')}`, zone: zone.name, art: zone.art, text,
+    title: sceneTitles[(id + bookId) % sceneTitles.length], zone: zone.name, art: zone.art, text,
     choices: [
       { label: 'Avancer prudemment', goto: next },
       { label: 'Prendre le détour aventureux', goto: detour },
@@ -304,6 +324,8 @@ export default function App() {
   const [log, setLog] = useState([])
   const [lastRoll, setLastRoll] = useState(null)
   const [savedAvailable, setSavedAvailable] = useState(false)
+  const [pendingClass, setPendingClass] = useState(null)
+  const [rolledHero, setRolledHero] = useState(null)
   const [shield, setShield] = useState(false)
 
   useEffect(() => { setSavedAvailable(Boolean(localStorage.getItem(SAVE_KEY))) }, [])
@@ -314,8 +336,25 @@ export default function App() {
   function save() { localStorage.setItem(SAVE_KEY, JSON.stringify({ hero, bookId, pid, log })); setSavedAvailable(true); addLog('Partie sauvegardée.') }
   function load() { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); setHero(s.hero); setBookId(s.bookId); setPid(s.pid); setLog(s.log || ['Sauvegarde chargée.']); setScreen('game'); setCombat(null) }
   function erase() { localStorage.removeItem(SAVE_KEY); setSavedAvailable(false); addLog('Sauvegarde effacée.') }
-  function startGame(classKey) { const h = createHero(classKey); setHero(h); setBookId(selectedBook); setPid(1); setScreen('game'); setLog([`Héros créé : ${h.nom}. Les caractéristiques ont été lancées aux dés.`]); setCombat(null) }
-  function restart() { setHero(null); setPid(1); setCombat(null); setScreen('home'); setLastRoll(null) }
+  function rollHero(classKey) {
+    const h = createHero(classKey)
+    setPendingClass(classKey)
+    setRolledHero(h)
+  }
+  function confirmStart() {
+    if (!rolledHero) return
+    const h = rolledHero
+    setHero(h)
+    setBookId(selectedBook)
+    setPid(1)
+    setScreen('game')
+    setLog([
+      `Héros créé : ${h.nom}.`,
+      `Dés lancés : Force ${h.rolls.force}, Dextérité ${h.rolls.dex}, Chance ${h.rolls.chance}, Esprit ${h.rolls.esprit}, PV ${h.rolls.pv}, Mana ${h.rolls.mana}.`
+    ])
+    setCombat(null)
+  }
+  function restart() { setHero(null); setPid(1); setCombat(null); setScreen('home'); setLastRoll(null); setRolledHero(null); setPendingClass(null) }
 
   function go(goto, eff) { if (eff) setHero(h => applyEffect(h, eff)); setPid(clamp(goto, 1, 300)); setCombat(null); setLastRoll(null); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   function can(choice) { return !choice.requiresItem || hero.items.includes(choice.requiresItem) }
@@ -327,7 +366,12 @@ export default function App() {
       const ok = total >= choice.dc
       setLastRoll({ a, b, bonus, stat: choice.test, dc: choice.dc, total, ok })
       addLog(`Test ${choice.test} : ${a}+${b}+${bonus} = ${total} / ${choice.dc} — ${ok ? 'réussite' : 'échec'}.`)
-      setTimeout(() => go(ok ? choice.success : choice.fail, ok ? choice.effect : null), 450)
+      if (ok) {
+        if (choice.successCombat) return setTimeout(() => startCombat(passage.enemy), 450)
+        return setTimeout(() => go(choice.success, choice.effect), 450)
+      }
+      if (choice.failCombat) return setTimeout(() => { addLog('Échec : la menace vous force au combat.'); startCombat(passage.enemy) }, 450)
+      setTimeout(() => go(choice.fail, null), 450)
       return
     }
     go(choice.goto, choice.effect)
@@ -386,27 +430,28 @@ export default function App() {
   }
   function restItem() { const item = hero.items.find(i => ['Ration', 'Potion de soin', 'Remède argenté'].includes(i)); if (!item) return; const heal = item === 'Ration' ? 6 : 14; setHero(h => ({ ...h, pv: clamp(h.pv + heal, 0, h.pvMax), items: h.items.filter((x, idx) => idx !== h.items.indexOf(item)) })); addLog(`${item} utilisé : +${heal} PV.`) }
 
-  if (screen === 'home') return <Home selectedBook={selectedBook} setSelectedBook={setSelectedBook} startGame={startGame} savedAvailable={savedAvailable} load={load} erase={erase} />
+  if (screen === 'home') return <Home selectedBook={selectedBook} setSelectedBook={setSelectedBook} rollHero={rollHero} confirmStart={confirmStart} rolledHero={rolledHero} pendingClass={pendingClass} savedAvailable={savedAvailable} load={load} erase={erase} />
 
   const art = ILLUSTRATIONS[passage.art] || ILLUSTRATIONS.battlefield
   return <main className="app"><div className="shell">
     <section className="panel">
-      <div className="header"><div><div className="kicker">{BOOKS[bookId].title} · Paragraphe {String(pid).padStart(3,'0')} · {passage.zone}</div><h1>{passage.title}</h1></div><div className="btnbar"><button className="btn good" onClick={save}>Sauvegarder</button><button className="btn" onClick={restart}>Menu</button></div></div>
+      <div className="header"><div><div className="kicker">{BOOKS[bookId].title} · Progression {pid}/300 · {passage.zone}</div><h1>{passage.title}</h1></div><div className="btnbar"><button className="btn good" onClick={save}>Sauvegarder</button><button className="btn" onClick={restart}>Menu</button></div></div>
       <div className="content">
         <img className="illustration" src={art} alt="Illustration noir et blanc" />
         <article className="paper"><h3>{passage.title}</h3><p className="text">{passage.text}</p></article>
         {lastRoll && <div className="combat"><b>Jet de dés</b><p>{lastRoll.a}+{lastRoll.b}+{lastRoll.stat} {lastRoll.bonus} = {lastRoll.total} / {lastRoll.dc} — {lastRoll.ok ? 'réussite' : 'échec'}.</p></div>}
         {passage.final && !combat && <div className="combat"><p>Dernier obstacle du livre. Vous pouvez terminer ce livre en remportant le combat final.</p><button className="btn primary" onClick={() => startCombat(passage.enemy)}>Affronter {passage.enemy.nom}</button></div>}
+        {!passage.final && passage.enemy && passage.blocking && !combat && (!passage.choices || passage.choices.length === 0) && <div className="combat"><p>Rencontre bloquante : vous devez résoudre cette scène avant de continuer.</p><button className="btn primary" onClick={() => startCombat(passage.enemy)}>Affronter {passage.enemy.nom}</button></div>}
         {combat && <Combat combat={combat} hero={hero} attack={attack} chanceMove={chanceMove} cast={cast} restItem={restItem} />}
-        {!combat && !passage.final && <div className="choices">{passage.choices.map((c, i) => <button key={i} className={'choice ' + (!can(c) ? 'locked' : '')} onClick={() => choose(c)}>{c.label}{c.test && <small>Test : {c.test} — difficulté {c.dc}</small>}</button>)}</div>}
+        {!combat && !passage.final && passage.choices?.length > 0 && <div className="choices">{passage.choices.map((c, i) => <button key={i} className={'choice ' + (!can(c) ? 'locked' : '')} onClick={() => choose(c)}>{c.label}{c.test && <small>Test : {c.test} — difficulté {c.dc}</small>}</button>)}</div>}
       </div>
     </section>
     <Sidebar hero={hero} bookId={bookId} pid={pid} log={log} save={save} />
   </div></main>
 }
 
-function Home({ selectedBook, setSelectedBook, startGame, savedAvailable, load, erase }) {
-  return <main className="home"><section className="panel heroBox"><div className="kicker">Version finale · Trilogie livre-jeu RPG</div><h1>Les Cendres d’Astréa</h1><h2>900 paragraphes jouables · combats · quêtes · secrets · illustrations noir et blanc</h2><p className="intro">Un homme se réveille amnésique sous un tas de cadavres, au milieu d’un champ de bataille. Le monde est en guerre, les épidémies ravagent les villages, les guildes se déchirent et un démon primordial manipule les six royaumes pour ouvrir un portail vers la dimension démoniaque.</p>{savedAvailable && <div className="btnbar" style={{marginTop:16}}><button className="btn good" onClick={load}>Continuer la sauvegarde</button><button className="btn bad" onClick={erase}>Effacer la sauvegarde</button></div>}<h2 style={{marginTop:24}}>Choisis le livre</h2><div className="books">{Object.entries(BOOKS).map(([id,b]) => <button key={id} className="selectCard" onClick={() => setSelectedBook(Number(id))} style={{outline: selectedBook===Number(id)?'2px solid #f1c36d':'none'}}><h3>{b.title}</h3><p>{b.subtitle}</p><b>300 paragraphes minimum</b></button>)}</div><h2 style={{marginTop:24}}>Choisis ton héros</h2><div className="classes">{Object.entries(CLASSES).map(([k,c]) => <button key={k} className="selectCard" onClick={() => startGame(k)}><h3>{c.nom}</h3><p>{c.desc}</p><small>Stats générées aux dés</small></button>)}</div></section></main>
+function Home({ selectedBook, setSelectedBook, rollHero, confirmStart, rolledHero, pendingClass, savedAvailable, load, erase }) {
+  return <main className="home"><section className="panel heroBox"><div className="kicker">Version finale · Trilogie livre-jeu RPG</div><h1>Les Cendres d’Astréa</h1><h2>Combats · quêtes · secrets · illustrations noir et blanc</h2><p className="intro">Un homme se réveille amnésique sous un tas de cadavres, au milieu d’un champ de bataille. Le monde est en guerre, les épidémies ravagent les villages, les guildes se déchirent et un démon primordial manipule les six royaumes pour ouvrir un portail vers la dimension démoniaque.</p>{savedAvailable && <div className="btnbar" style={{marginTop:16}}><button className="btn good" onClick={load}>Continuer la sauvegarde</button><button className="btn bad" onClick={erase}>Effacer la sauvegarde</button></div>}<h2 style={{marginTop:24}}>Choisis le livre</h2><div className="books">{Object.entries(BOOKS).map(([id,b]) => <button key={id} className="selectCard" onClick={() => setSelectedBook(Number(id))} style={{outline: selectedBook===Number(id)?'2px solid #f1c36d':'none'}}><h3>{b.title}</h3><p>{b.subtitle}</p><b>Aventure longue</b></button>)}</div><h2 style={{marginTop:24}}>Choisis ton héros</h2><div className="classes">{Object.entries(CLASSES).map(([k,c]) => <button key={k} className="selectCard" onClick={() => rollHero(k)} style={{outline: pendingClass===k?'2px solid #f1c36d':'none'}}><h3>{c.nom}</h3><p>{c.desc}</p><small>Clique pour préparer le lancer de dés</small></button>)}</div>{rolledHero && <div className="rollBox"><div className="kicker">Création du héros · lancer de dés</div><h2>Points de capacité obtenus</h2><p className="intro">Les dés déterminent tes capacités. Tu peux relancer avant de commencer l’aventure.</p><div className="diceGrid"><Stat label="Dé Force" value={rolledHero.rolls.force}/><Stat label="Dé Dextérité" value={rolledHero.rolls.dex}/><Stat label="Dé Chance" value={rolledHero.rolls.chance}/><Stat label="Dé Esprit" value={rolledHero.rolls.esprit}/><Stat label="Dés PV" value={rolledHero.rolls.pv}/><Stat label="Dé Mana" value={rolledHero.rolls.mana}/></div><div className="diceGrid finalStats"><Stat label="Force finale" value={rolledHero.force}/><Stat label="Dextérité finale" value={rolledHero.dex}/><Stat label="Chance finale" value={rolledHero.chance}/><Stat label="Esprit final" value={rolledHero.esprit}/><Stat label="PV max" value={rolledHero.pvMax}/><Stat label="Mana max" value={rolledHero.manaMax}/></div><div className="btnbar" style={{marginTop:16}}><button className="btn" onClick={() => rollHero(pendingClass)}>Relancer les dés</button><button className="btn primary" onClick={confirmStart}>Commencer l’aventure</button></div></div>}</section></main>
 }
 
 function Combat({ combat, hero, attack, chanceMove, cast, restItem }) {
@@ -414,7 +459,7 @@ function Combat({ combat, hero, attack, chanceMove, cast, restItem }) {
 }
 
 function Sidebar({ hero, bookId, pid, log }) {
-  return <aside className="side"><div className="card"><h3>Feuille d’aventure</h3><b>{hero.nom}</b><Meter label="PV" value={hero.pv} max={hero.pvMax} cls="red"/><Meter label="Mana" value={hero.mana} max={hero.manaMax} cls="blue"/><div className="grid2"><Stat label="Force" value={hero.force}/><Stat label="Dextérité" value={hero.dex}/><Stat label="Chance" value={`${hero.chance}/${hero.chanceMax}`}/><Stat label="Esprit" value={hero.esprit}/></div></div><div className="card"><h3>Progression</h3><p>Livre {bookId} · § {pid}/300</p><Meter label="Mémoire" value={hero.memoire} max={100} cls="purple"/><Meter label="Corruption" value={hero.corruption} max={100} cls="red"/><Meter label="Réputation" value={hero.reputation + 100} max={200}/><p>Niveau {hero.niveau} · XP {hero.xp} · Or {hero.or}</p></div><Tags title="Inventaire" items={hero.items}/><Tags title="Sorts" items={hero.spells}/><Tags title="Alliés" items={hero.allies}/><Tags title="Quêtes actives" items={hero.quests}/><Tags title="Quêtes terminées" items={hero.done}/><Tags title="Secrets" items={hero.secrets}/>{hero.endings.length>0 && <div className="card"><h3>Codes de fin</h3>{hero.endings.map(e=><p className="endCode" key={e}>{e}</p>)}</div>}<div className="card"><h3>Journal</h3><div className="log">{log.map((l,i)=><p key={i}>{l}</p>)}</div></div></aside>
+  return <aside className="side"><div className="card"><h3>Feuille d’aventure</h3><b>{hero.nom}</b><Meter label="PV" value={hero.pv} max={hero.pvMax} cls="red"/><Meter label="Mana" value={hero.mana} max={hero.manaMax} cls="blue"/><div className="grid2"><Stat label="Force" value={hero.force}/><Stat label="Dextérité" value={hero.dex}/><Stat label="Chance" value={`${hero.chance}/${hero.chanceMax}`}/><Stat label="Esprit" value={hero.esprit}/></div></div><div className="card"><h3>Progression</h3><p>Livre {bookId} · Progression {pid}/300</p><Meter label="Mémoire" value={hero.memoire} max={100} cls="purple"/><Meter label="Corruption" value={hero.corruption} max={100} cls="red"/><Meter label="Réputation" value={hero.reputation + 100} max={200}/><p>Niveau {hero.niveau} · XP {hero.xp} · Or {hero.or}</p></div><Tags title="Inventaire" items={hero.items}/><Tags title="Sorts" items={hero.spells}/><Tags title="Alliés" items={hero.allies}/><Tags title="Quêtes actives" items={hero.quests}/><Tags title="Quêtes terminées" items={hero.done}/><Tags title="Secrets" items={hero.secrets}/>{hero.endings.length>0 && <div className="card"><h3>Codes de fin</h3>{hero.endings.map(e=><p className="endCode" key={e}>{e}</p>)}</div>}<div className="card"><h3>Journal</h3><div className="log">{log.map((l,i)=><p key={i}>{l}</p>)}</div></div></aside>
 }
 function Meter({ label, value, max, cls='' }) { return <div className="meter"><div className="meterRow"><span>{label}</span><span>{value}/{max}</span></div><div className="track"><div className={'fill '+cls} style={{width:pct(value,max)}} /></div></div> }
 function Stat({ label, value }) { return <div className="stat"><span>{label}</span><b>{value}</b></div> }

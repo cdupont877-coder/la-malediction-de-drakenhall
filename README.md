@@ -5,7 +5,7 @@ Trilogie de livre-jeu RPG web inspirée des livres dont vous êtes le héros.
 ## Contenu
 
 - 3 livres jouables.
-- 300 paragraphes minimum par livre, soit 900 paragraphes générés/structurés.
+- Une trilogie structurée en livres-jeux RPG longs.
 - Combats, boss, quêtes, secrets et choix à embranchements.
 - Sauvegarde locale dans le navigateur.
 - Force, Dextérité, Chance, Esprit, PV, Mana.

@@ -61,3 +61,6 @@ h2 { margin-bottom: 0; color: #f1d08a; font-size: clamp(20px, 2.8vw, 34px); }
 .endCode { background:#261808; border:1px solid #e0aa55; border-radius:16px; padding:12px; color:#ffd884; }
 @media (max-width: 980px) { .shell { grid-template-columns:1fr; } .side { position:static; max-height:none; } .app { padding:10px; } .header { padding:18px; } .content { padding:14px; } .illustration { height: 58vh; } .text { font-size:18px; } }
 @media (max-width: 560px) { .paper { padding:16px; } .illustration { height: 46vh; } .choice { font-size:16px; } .grid2 { grid-template-columns:1fr 1fr; } }
+.rollBox { margin-top: 22px; border: 1px solid rgba(241,195,109,.45); background: rgba(0,0,0,.22); border-radius: 24px; padding: 20px; }
+.diceGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
+.finalStats .stat { border-color: rgba(241,195,109,.35); background: #1b140e; }
