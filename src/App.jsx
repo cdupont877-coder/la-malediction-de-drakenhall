@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-const SAVE_KEY = 'les_cendres_astrea_finale_v4'
+const SAVE_KEY = 'les_cendres_astrea_v4_livre_jeu_propre'
 const A = '/assets/illustrations/'
 
 const ILLUSTRATIONS = {
@@ -16,11 +16,11 @@ const ILLUSTRATIONS = {
 
 const CLASSES = {
   veilleur: {
-    nom: 'Veilleur amnésique',
-    desc: 'Équilibré, lié aux dieux et au Voile. Bon choix pour une première partie.',
+    nom: 'Survivant amnésique',
+    desc: 'Équilibré, avec une marque étrange dont l’origine reste inconnue. Bon choix pour une première partie.',
     mods: { force: 1, dex: 1, chance: 1, esprit: 1, pv: 8, mana: 6 },
     objets: ['Médaillon du Soleil brisé', 'Pierre à feu'],
-    sorts: ['Lueur sacrée'],
+    sorts: ['Lueur pâle'],
   },
   guerrier: {
     nom: 'Ancien guerrier',
@@ -34,19 +34,19 @@ const CLASSES = {
     desc: 'Très bon en Dextérité et Chance. Excellent pour pièges, secrets et embuscades.',
     mods: { force: 0, dex: 4, chance: 2, esprit: 0, pv: 7, mana: 3 },
     objets: ['Arc court', 'Dague', 'Ration'],
-    sorts: ['Lueur sacrée'],
+    sorts: ['Lueur pâle'],
   },
   mystique: {
     nom: 'Mystique marqué',
     desc: 'Fragile, mais très fort en magie et contre les créatures du Voile.',
     mods: { force: -1, dex: 0, chance: 1, esprit: 5, pv: 4, mana: 14 },
     objets: ['Craie rituelle', 'Chapelet brisé'],
-    sorts: ['Lueur sacrée', 'Soin mineur', 'Trait de givre'],
+    sorts: ['Lueur pâle', 'Soin mineur', 'Trait de givre'],
   },
 }
 
 const SPELLS = {
-  'Lueur sacrée': { cout: 4, type: 'damageHoly', degats: 9, desc: 'Blesse fortement morts-vivants et démons.' },
+  'Lueur pâle': { cout: 4, type: 'damageHoly', degats: 9, desc: 'Blesse fortement morts-vivants et démons.' },
   'Soin mineur': { cout: 5, type: 'heal', soin: 12, desc: 'Rend 12 PV.' },
   'Trait de givre': { cout: 5, type: 'damage', degats: 10, desc: 'Sort offensif fiable.' },
   'Flamme spectrale': { cout: 7, type: 'damageHoly', degats: 14, desc: 'Très puissant contre morts-vivants, esprits et démons.' },
@@ -65,7 +65,7 @@ const BOOKS = {
       { start: 106, end: 150, name: 'Le Cimetière des Soldats', art: 'cemetery', theme: 'squelettes, nécromancien, registre des morts' },
       { start: 151, end: 195, name: 'La Forêt Brûlée', art: 'forest', theme: 'braconniers, esprits de la forêt, ent corrompu' },
       { start: 196, end: 240, name: 'Le Manoir de Brumeval', art: 'manor', theme: 'vampires, assassins, fragments de mémoire' },
-      { start: 241, end: 270, name: 'La Chapelle en Ruine', art: 'chapel', theme: 'relique divine, Guilde Noire, choix de foi' },
+      { start: 241, end: 270, name: 'La Chapelle en Ruine', art: 'chapel', theme: 'relique ancienne, Guilde Noire, choix de confiance' },
       { start: 271, end: 300, name: 'La Première Faille', art: 'rift', theme: 'portail démoniaque, Azhraël, final du livre I' },
     ],
     bosses: { 30: 'Capitaine possédé', 60: 'Marn le Crochu', 95: 'Esprit pestiféré du puits', 135: 'Nécromancien du cimetière', 185: 'Ent corrompu', 225: 'Sire Vael Draven', 260: 'Adepte majeur du Cercle', 295: 'Démon mineur de la faille' },
@@ -76,7 +76,7 @@ const BOOKS = {
     code: 'CENDRES-II',
     zones: [
       { start: 1, end: 45, name: 'Aldéris, Royaume Humain', art: 'village', theme: 'capitale assiégée, intrigues, épidémie' },
-      { start: 46, end: 90, name: 'Kar-Durak, Royaume Nain', art: 'chapel', theme: 'forges sacrées, mines, scorpions, rune ancienne' },
+      { start: 46, end: 90, name: 'Kar-Durak, Royaume Nain', art: 'chapel', theme: 'forges anciennes, mines, scorpions, rune ancienne' },
       { start: 91, end: 135, name: 'Sylvéria, Forêt Elfique', art: 'forest', theme: 'sanctuaires, ents, esprits, braconniers' },
       { start: 136, end: 180, name: 'Nocthyr, Royaume Noir', art: 'manor', theme: 'elfes noirs, vampires, manoirs, assassins' },
       { start: 181, end: 225, name: 'Varkhâl, Terres Orques', art: 'battlefield', theme: 'clans, barbares, arènes, griffons' },
@@ -112,7 +112,7 @@ const QUEST_TITLES = [
 const SECRET_TITLES = [
   'La bataille était un rituel', 'Les six sceaux protègent le Voile', 'Azhraël cherche le vrai nom du héros',
   'La Guilde Noire manipule plusieurs royaumes', 'Les orques ont été accusés à tort', 'Un vampire connaît le passé de Kaël',
-  'Les dieux ne disent pas toute la vérité', 'Un allié peut être possédé', 'Le Soleil brisé est l’emblème des Veilleurs',
+  'Les puissances anciennes ne disent pas toute la vérité', 'Un allié peut être possédé', 'Le Soleil brisé est l’emblème des Veilleurs',
   'La peste vient des fragments démoniaques', 'Un sceau royal a déjà été remplacé', 'La vraie fin exige mémoire et corruption basse',
 ]
 
@@ -143,32 +143,36 @@ function createHero(classKey) {
 function generatedPassage(bookId, id, hero) {
   const book = BOOKS[bookId]
   const zone = zoneFor(book, id)
-  const boss = book.bosses[id]
-  const chapterIndex = book.zones.findIndex(z => z.name === zone.name) + 1
-  const q = QUEST_TITLES[(id + bookId) % QUEST_TITLES.length]
-  const s = SECRET_TITLES[(id * 2 + bookId) % SECRET_TITLES.length]
-  const enemy = boss || ENEMY_NAMES[(id + bookId * 3) % ENEMY_NAMES.length]
-  const dc = 10 + Math.floor(id / 70) + bookId
+  const zoneIndex = book.zones.findIndex(z => z.name === zone.name)
+  const local = id - zone.start + 1
+  const zoneLength = zone.end - zone.start + 1
   const next = Math.min(300, id + 1)
-  const branch = Math.min(300, id + 2 + (id % 4))
-  const detour = Math.min(300, id + 5 + (id % 6))
-  const isBoss = Boolean(boss)
-  const isCombat = isBoss || id % 5 === 0 || id % 7 === 0
-  const isQuest = id % 12 === 0
-  const isSecret = id % 17 === 0
-  const isRest = id % 29 === 0
+  const alt = Math.min(zone.end, id + 2)
+  const endOfZone = id >= zone.end
+  const boss = book.bosses[id]
+  const dc = 10 + bookId + Math.floor(id / 90)
+
+  const zoneData = getZoneData(bookId, zoneIndex, zone)
+  const scene = zoneData.scenes[(local - 1) % zoneData.scenes.length]
+  const detail = zoneData.details[(local + 2) % zoneData.details.length]
+  const danger = zoneData.dangers[(local + 4) % zoneData.dangers.length]
+  const npc = zoneData.npcs[(local + 6) % zoneData.npcs.length]
+  const object = zoneData.objects[(local + 8) % zoneData.objects.length]
+  const secret = zoneData.secrets[(local + 10) % zoneData.secrets.length]
+  const quest = zoneData.quests[(local + 12) % zoneData.quests.length]
+  const enemyName = boss || zoneData.enemies[(local + bookId) % zoneData.enemies.length]
 
   if (id === 1 && bookId === 1) {
     return {
       title: 'Sous les cadavres', zone: zone.name, art: zone.art,
-      text: `Vous ouvrez les yeux dans le noir. Quelque chose pèse sur votre poitrine. Une main morte recouvre votre visage. L’odeur du sang, de la boue et de la chair brûlée vous soulève le cœur.\n\nVous êtes allongé sous un tas de cadavres. Des humains. Des orques. Des nains. Des gobelins. Des soldats dont les armures sont fendues. Des bannières déchirées flottent dans la pluie.\n\nVous essayez de vous souvenir de votre nom. Rien. Seulement une douleur vive à l’arrière du crâne. Puis une voix lointaine résonne : « Relève-toi. Les dieux ne t’ont pas choisi pour mourir ici. »\n\nAutour de votre poignet, une marque pâle commence à brûler.`,
+      text: `Vous ouvrez les yeux dans le noir. Quelque chose pèse sur votre poitrine. Une main morte recouvre votre visage. L’odeur du sang, de la boue et de la chair brûlée vous soulève le cœur.\n\nVous êtes allongé sous un tas de cadavres. Des humains. Des orques. Des nains. Des gobelins. Des soldats dont les armures sont fendues. Des bannières déchirées flottent dans la pluie.\n\nVous essayez de vous souvenir de votre nom. Rien. Seulement une douleur vive à l’arrière du crâne. Puis une voix lointaine résonne : « Relève-toi. Pas ici. Pas encore. »\n\nAutour de votre poignet, une marque pâle commence à brûler.`,
       choices: [
         { label: 'Ramper hors du tas de cadavres', goto: 2 },
-        { label: 'Rester immobile et écouter les pillards', test: 'chance', dc: 10, success: 3, fail: 5 },
-        { label: 'Fouiller les corps autour de vous', effect: { item: 'Médaillon du Soleil brisé', or: 3, memoire: 1 }, goto: 4 },
+        { label: 'Rester immobile et écouter les pillards', test: 'chance', dc: 10, success: 3, failCombat: true },
+        { label: 'Fouiller les corps autour de vous', effect: { item: 'Médaillon du Soleil brisé', or: 3, memoire: 1, secret: 'Le Soleil brisé marque les Veilleurs du Voile' }, goto: 4 },
         { label: 'Appeler à l’aide', combat: true },
       ],
-      enemy: mkEnemy(bookId, id, 'Cadavre animé', true),
+      enemy: mkEnemy(bookId, id, 'Cadavre animé', false),
     }
   }
 
@@ -176,7 +180,7 @@ function generatedPassage(bookId, id, hero) {
     return {
       title: bookId === 2 ? 'Les royaumes brûlent' : 'La dernière guerre du Voile', zone: zone.name, art: zone.art,
       text: bookId === 2
-        ? `Vous quittez les ruines de Val-Cendre avec un code de fin gravé dans votre mémoire. Devant vous, les six royaumes s’accusent, s’arment et saignent. Chaque souverain possède un sceau. Azhraël n’a pas besoin de les voler : il lui suffit que les royaumes se détruisent entre eux.`
+        ? `Vous quittez les ruines de Val-Cendre avec les premières réponses et trop de nouvelles questions. Devant vous, les six royaumes s’accusent, s’arment et saignent. Chaque souverain possède un sceau. Azhraël n’a pas besoin de les voler : il lui suffit que les royaumes se détruisent entre eux.`
         : `Le portail s’ouvre enfin. Les choix des deux premiers livres vous suivent comme des ombres : alliés, dettes, corruptions, serments et morts abandonnés. Face à Azhraël, il ne suffira plus de survivre. Il faudra décider ce qui mérite d’être sauvé.`,
       choices: [{ label: 'Commencer ce livre', goto: 2 }],
     }
@@ -187,98 +191,281 @@ function generatedPassage(bookId, id, hero) {
     return {
       title: boss || 'Fin du livre', zone: zone.name, art: zone.art,
       text: bookId === 3
-        ? `Le trône d’Azhraël se fissure sous vos pieds. Le Dévoreur de Voiles prononce enfin votre nom, mais il arrive trop tard : vous avez retrouvé assez de mémoire pour choisir qui vous êtes.\n\nSelon votre corruption, vos alliés et les secrets découverts, Astréa connaîtra la victoire sacrée, le sacrifice, le règne des cendres ou la vraie fin.`
-        : `Le dernier combat de ce livre s’achève dans la fumée. Vous avez survécu, mais Astréa reste au bord du gouffre. Vos choix composent désormais un code de sauvegarde pour le livre suivant.`,
+        ? `Le trône d’Azhraël se fissure sous vos pieds. Le Dévoreur de Voiles prononce enfin votre nom, mais il arrive trop tard : vous avez retrouvé assez de mémoire pour choisir qui vous êtes. Selon votre corruption, vos alliés et les secrets découverts, Astréa connaîtra la victoire du Voile, le sacrifice, le règne des cendres ou la vraie fin.`
+        : `Le dernier obstacle de ce livre vous attend. Derrière lui, une seule certitude demeure : Astréa n’est pas sauvée, elle vient seulement de survivre à une première nuit. Vos choix composeront désormais un code de sauvegarde pour la suite.`,
       final: true, ending,
       enemy: mkEnemy(bookId, id, boss || 'Gardien final', true),
     }
   }
 
-  const introTemplates = [
-    `La route vous mène vers ${zone.name}. Autour de vous, ${zone.theme}. Rien ne paraît vraiment sûr, pas même le silence.\n\n`,
-    `Dans ${zone.name}, l’air semble plus lourd. ${zone.theme}. Vous avancez avec la sensation que chaque bruit peut annoncer une menace.\n\n`,
-    `Vous progressez à travers ${zone.name}. Les traces de guerre, de peur et de magie noire se mêlent aux lieux : ${zone.theme}.\n\n`,
-    `Le décor change peu à peu. ${zone.name} s’étend devant vous, marqué par ${zone.theme}. Vous resserrez votre prise sur votre arme.\n\n`,
-    `Une nouvelle portion du voyage commence dans ${zone.name}. Ici, ${zone.theme}. Les ombres semblent garder leurs propres secrets.\n\n`,
-    `Vous poursuivez votre route dans ${zone.name}. Les lieux portent encore les cicatrices de ce monde brisé : ${zone.theme}.\n\n`,
-  ]
-  let text = introTemplates[(id + bookId) % introTemplates.length]
-
-  if (isBoss) {
-    text += `La route se ferme devant vous. ${boss} apparaît, entouré de fumée et de silence. Sa présence semble reconnaître la marque qui brûle à votre poignet. Ce passage est bloquant : il faut vaincre ce boss pour poursuivre.`
-    return { title: boss, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, boss, true), blocking: true, choices: [] }
+  if (boss) {
+    const text = `${zoneData.bossIntro || 'La route se referme devant vous.'}\n\n${boss} apparaît. ${danger}. Sa présence n’est pas une rencontre de hasard : tout ce que vous avez fait dans ${zone.name} vous mène à cet affrontement.\n\nImpossible de continuer sans résoudre ce passage. Il faut combattre, utiliser vos ressources et assumer les choix qui vous ont conduit ici.`
+    return {
+      title: boss,
+      zone: zone.name,
+      art: zone.art,
+      text,
+      enemy: mkEnemy(bookId, id, boss, true),
+      blocking: true,
+      choices: [],
+    }
   }
 
-  if (isCombat) {
-    text += `Un danger surgit avant que vous puissiez reprendre votre souffle : ${enemy}. Cette rencontre bloque votre progression : vous devez la résoudre par le combat, la fuite ou la parole. Impossible de simplement changer de route tant que la menace vous fait face.`
+  if (endOfZone) {
+    const nextZone = book.zones[zoneIndex + 1]
+    const text = `${zoneData.exit || 'Vous atteignez enfin la limite de cette zone.'}\n\nDerrière vous, ${zone.name} garde ses morts, ses secrets et les conséquences de vos choix. Devant vous, ${nextZone ? nextZone.name : 'la conclusion du livre'} vous attend. Vous sentez que l’aventure avance d’un cran : ce n’est pas un détour, mais la suite logique de votre route.`
     return {
-      title: `Rencontre — ${enemy}`, zone: zone.name, art: zone.art, text, enemy: mkEnemy(bookId, id, enemy, false), blocking: true,
+      title: `Quitter ${zone.name}`,
+      zone: zone.name,
+      art: zone.art,
+      text,
+      choices: [{ label: nextZone ? `Continuer vers ${nextZone.name}` : 'Aller vers la conclusion', goto: next }],
+    }
+  }
+
+  const isCombat = local % 8 === 0 || local % 13 === 0
+  const isQuest = local % 11 === 0
+  const isSecret = local % 9 === 0
+  const isRest = local % 17 === 0
+
+  if (isCombat) {
+    const text = `${scene}\n\n${detail}. Vous comprenez trop tard que ${danger.toLowerCase()}. ${enemyName} surgit et vous coupe la route.\n\nCette rencontre est bloquante : vous ne pouvez pas simplement partir vers une autre scène. Il faut vaincre, fuir par un vrai test ou trouver les mots justes.`
+    return {
+      title: `Rencontre — ${enemyName}`,
+      zone: zone.name,
+      art: zone.art,
+      text,
+      enemy: mkEnemy(bookId, id, enemyName, false),
+      blocking: true,
       choices: [
-        { label: `Combattre ${enemy}`, combat: true },
+        { label: `Combattre ${enemyName}`, combat: true },
         { label: 'Tenter de fuir — test de Dextérité', test: 'dex', dc: dc + 2, success: next, failCombat: true },
-        { label: 'Tenter de parlementer ou distraire — test d’Esprit', test: 'esprit', dc: dc + 2, success: branch, failCombat: true },
-        { label: 'Tenter un coup de chance', test: 'chance', dc: dc + 2, success: next, failCombat: true },
-      ]
+        { label: 'Tenter de distraire ou parlementer — test d’Esprit', test: 'esprit', dc: dc + 2, success: alt, failCombat: true },
+        { label: 'Tenter un coup de Chance', test: 'chance', dc: dc + 2, success: next, failCombat: true },
+      ],
     }
   }
 
   if (isQuest) {
-    text += `Une piste secondaire se présente : ${q}. Cette quête peut ralentir votre route, mais elle peut aussi vous offrir un allié, un objet ou un fragment de vérité.`
+    const text = `${scene}\n\n${npc} vous entraîne vers une affaire qui ne peut pas être ignorée : ${quest}. Ce n’est pas une parenthèse gratuite. Cette quête éclaire ce qui se passe dans ${zone.name} et peut modifier vos alliés, votre réputation ou votre corruption.`
     return {
-      title: `Quête — ${q}`, zone: zone.name, art: zone.art, text,
+      title: `Quête — ${quest}`,
+      zone: zone.name,
+      art: zone.art,
+      text,
       choices: [
-        { label: 'Accepter la quête', effect: { quest: q, reputation: 1 }, goto: next },
-        { label: 'Chercher une solution rapide', test: 'esprit', dc, success: branch, fail: next },
-        { label: 'Ignorer cette affaire', effect: { reputation: -1, corruption: 1 }, goto: next },
-      ]
+        { label: 'Accepter la quête et aider', effect: { quest, reputation: 1 }, goto: next },
+        { label: 'Chercher une solution rapide — test d’Esprit', test: 'esprit', dc, success: alt, fail: next, effect: { memoire: 1 } },
+        { label: 'Refuser et continuer la route', effect: { reputation: -1, corruption: 1 }, goto: next },
+      ],
     }
   }
 
   if (isSecret) {
-    text += `Un détail vous frappe : une trace, un symbole, un mot répété dans un rêve. Si vous prenez le temps de comprendre, vous découvrirez peut-être un secret : ${s}.`
+    const text = `${scene}\n\n${object} attire votre attention. Ce détail semble presque insignifiant, pourtant il relie ${zone.name} à un mystère plus vaste : ${secret}. Si vous prenez le temps d’enquêter, la progression sera plus lente, mais plus cohérente avec votre quête de mémoire.`
     return {
-      title: `Secret dans l’ombre`, zone: zone.name, art: zone.art, text,
+      title: 'Un indice sous la cendre',
+      zone: zone.name,
+      art: zone.art,
+      text,
       choices: [
-        { label: 'Examiner le secret', test: 'esprit', dc, success: branch, fail: next, effect: { secret: s, memoire: 1 } },
-        { label: 'Noter l’indice et continuer', effect: { memoire: 1 }, goto: next },
-        { label: 'Détruire ce symbole inquiétant', effect: { corruption: -1, reputation: 1 }, goto: next },
-      ]
+        { label: 'Examiner l’indice — test d’Esprit', test: 'esprit', dc, success: alt, fail: next, effect: { secret, memoire: 1 } },
+        { label: 'Le conserver sans perdre de temps', effect: { item: object, memoire: 1 }, goto: next },
+        { label: 'Le détruire par prudence', effect: { corruption: -1 }, goto: next },
+      ],
     }
   }
 
   if (isRest) {
-    text += `Un abri précaire vous permet de souffler. La route est encore longue, mais quelques minutes de repos peuvent faire la différence entre un héros vivant et une légende morte.`
+    const text = `${scene}\n\nVous trouvez un court répit. ${detail}. Ce repos ne vous éloigne pas de l’objectif : il marque une pause logique avant la prochaine menace.`
     return {
-      title: 'Repos précaire', zone: zone.name, art: zone.art, text,
+      title: 'Un abri précaire',
+      zone: zone.name,
+      art: zone.art,
+      text,
       choices: [
-        { label: 'Vous reposer', effect: { pv: 10, mana: 6 }, goto: next },
-        { label: 'Monter la garde et écouter', effect: { memoire: 1 }, goto: branch },
+        { label: 'Vous reposer quelques minutes', effect: { pv: 10, mana: 6 }, goto: next },
+        { label: 'Monter la garde et réfléchir', effect: { memoire: 1 }, goto: alt },
         { label: 'Repartir immédiatement', goto: next },
-      ]
+      ],
     }
   }
 
-  const sceneTextTemplates = [
-    `Le chemin se divise devant vous. La voie la plus courte paraît praticable, mais les traces qui s’enfoncent à l’écart promettent peut-être des réponses que personne ne vous offrira gratuitement.`,
-    `Un bruit sec retentit un peu plus loin. Branche cassée, pas maladroit ou piège volontaire : impossible de le savoir sans vous approcher.`,
-    `Vous remarquez une marque presque effacée sur la pierre. Elle ne ressemble pas aux signes des royaumes, mais quelque chose en elle vous paraît étrangement familier.`,
-    `La route principale continue vers l’obscurité. Sur le côté, un passage plus étroit disparaît entre les ruines et les ronces.`,
-    `Le vent apporte une odeur de fumée froide. Quelqu’un est passé ici avant vous, et rien ne garantit qu’il soit encore loin.`,
-    `Un silence inhabituel tombe sur les lieux. Même les corbeaux semblent attendre votre décision.`,
-    `Le sol garde plusieurs empreintes récentes. Certaines sont humaines, d’autres beaucoup moins rassurantes.`,
-    `Une intuition vous retient. Continuer serait simple, mais les détours sont parfois les seuls chemins vers la vérité.`,
-  ]
-  text += sceneTextTemplates[(id * 3 + bookId) % sceneTextTemplates.length]
-  const sceneTitles = ['Le chemin divisé', 'Une trace dans la boue', 'Le souffle du danger', 'La route des ombres', 'Un choix sous la cendre', 'L’indice oublié', 'La voie dangereuse', 'Le détour des survivants']
+  const text = `${scene}\n\n${detail}. ${npc}. Le lien avec votre objectif reste clair : avancer dans ${zone.name}, comprendre ce qui nourrit le chaos, et retrouver les fragments de votre identité.\n\n${danger}. Vous devez choisir comment poursuivre sans perdre le fil de votre mission.`
   return {
-    title: sceneTitles[(id + bookId) % sceneTitles.length], zone: zone.name, art: zone.art, text,
+    title: zoneData.titles[(local + bookId) % zoneData.titles.length],
+    zone: zone.name,
+    art: zone.art,
+    text,
     choices: [
-      { label: 'Avancer prudemment', goto: next },
-      { label: 'Prendre le détour aventureux', goto: detour },
-      { label: 'Tenter un raccourci risqué', test: id % 2 === 0 ? 'dex' : 'force', dc, success: branch, fail: next },
-      { label: 'Chercher un indice caché', test: 'esprit', dc: dc + 1, success: branch, fail: next, effect: { memoire: 1 } },
-    ]
+      { label: zoneData.forward || 'Continuer sur la route principale', goto: next },
+      { label: zoneData.investigate || 'Examiner les lieux avant d’avancer', test: 'esprit', dc, success: alt, fail: next, effect: { memoire: 1 } },
+      { label: zoneData.risk || 'Prendre une approche risquée', test: local % 2 === 0 ? 'dex' : 'force', dc: dc + 1, success: alt, fail: next },
+    ],
   }
+}
+
+function getZoneData(bookId, zoneIndex, zone) {
+  const base = {
+    titles: ['La route incertaine', 'Le signe oublié', 'Sous un ciel de cendre', 'Le choix du survivant', 'Une trace de guerre'],
+    scenes: [`Vous avancez dans ${zone.name}.`, `Le chemin se resserre dans ${zone.name}.`, `Le silence de ${zone.name} vous accompagne.`],
+    details: ['Des traces récentes marquent le sol', 'Un symbole ancien apparaît sous la poussière', 'La lumière décline derrière les ruines'],
+    dangers: ['Une présence hostile se rapproche', 'Un bruit sec révèle que vous êtes suivi', 'La magie noire a laissé une empreinte ici'],
+    npcs: ['Un survivant tremblant vous observe', 'Une silhouette hésite à se montrer', 'Une voix lointaine appelle à l’aide'],
+    objects: ['un éclat de métal gravé', 'une page tachée de boue', 'une pierre froide marquée d’un cercle'],
+    secrets: ['Azhraël étend son influence au-delà de cette zone', 'les faux ordres de guerre ont été transmis par le Cercle de Cendre', 'la marque inconnue réagit aux lieux blessés par le Voile'],
+    quests: ['secourir un survivant', 'retrouver une preuve cachée', 'briser un petit rituel noir'],
+    enemies: ['Pillard', 'Squelette', 'Goule', 'Possédé', 'Mercenaire'],
+    forward: 'Continuer prudemment', investigate: 'Chercher un indice cohérent', risk: 'Tenter un passage dangereux',
+  }
+
+  const livre1 = [
+    {
+      titles: ['La boue et le sang', 'La bannière tombée', 'Les voix des charognards', 'Un survivant sous les morts', 'Le cercle dans la pluie'],
+      scenes: ['Vous vous extirpez peu à peu du charnier. La pluie colle les cheveux à votre front et transforme la terre en boue rouge.', 'Entre les corps, des bannières déchirées claquent encore dans le vent, comme si la bataille refusait de se taire.', 'Vous rampez entre des boucliers fendus et des lances brisées. Chaque cadavre pourrait cacher un indice ou un danger.'],
+      details: ['Une odeur de fer, de cendre et de chair brûlée vous prend à la gorge', 'Un corbeau se pose sur un casque ouvert et vous fixe comme s’il vous reconnaissait', 'Une empreinte fraîche traverse la boue entre les morts'],
+      dangers: ['les pillards fouillent déjà les corps autour de vous', 'quelque chose bouge sous les cadavres', 'une silhouette encapuchonnée inspecte les survivants'],
+      npcs: ['Un soldat agonisant murmure un nom que vous avez presque reconnu', 'Une éclaireuse blessée vous observe depuis un chariot renversé', 'Un nain mourant serre contre lui une boîte scellée'],
+      objects: ['un médaillon du Soleil brisé', 'une lettre adressée à Kaël', 'une chevalière couverte de sang'],
+      secrets: ['la bataille était un rituel de masse', 'quelqu’un recherche le porteur de la marque', 'les six peuples ont été sacrifiés pour fissurer le Voile'],
+      quests: ['sauver l’éclaireuse Élyane', 'protéger la boîte du nain Borik', 'échapper au camp des pillards'],
+      enemies: ['Cadavre animé', 'Pillard de champ de bataille', 'Goule fraîche', 'Adepte de la Guilde Noire'],
+      forward: 'Ramper vers la sortie du champ de bataille', investigate: 'Fouiller les morts avec prudence', risk: 'Traverser à découvert entre les pillards',
+      exit: 'Le champ des morts s’éloigne derrière vous. Au bout de la route, un clocher fume au-dessus de Val-Cendre.',
+      bossIntro: 'Les cadavres autour de vous se redressent comme si une seule volonté les commandait.',
+    },
+    {
+      titles: ['Les portes closes', 'La place sans voix', 'Derrière les volets', 'La maison barricadée', 'La cloche de Val-Cendre'],
+      scenes: ['Val-Cendre vous accueille par des volets fermés et une cloche qui sonne seule.', 'La place du village semble vide, mais chaque maison retient son souffle.', 'Une charrette renversée bloque la rue principale ; sur ses planches, quelqu’un a gravé un signe de quarantaine.'],
+      details: ['Des traces de pas mènent toutes vers le puits central', 'Une femme malade serre un enfant contre elle derrière une porte entrouverte', 'La suie sur les murs montre que les villageois ont brûlé leurs morts trop vite'],
+      dangers: ['la peste n’est pas naturelle', 'certains malades grattent les portes de l’intérieur', 'un symbole de la Guilde Noire a été dissimulé sous les marques de quarantaine'],
+      npcs: ['Mira, une mère épuisée, vous supplie d’aider son fils', 'Un ancien milicien vous accuse d’apporter la malédiction avec vous', 'Le prêtre refuse d’ouvrir la chapelle tant que la marque n’a pas parlé'],
+      objects: ['le journal du guérisseur', 'une fiole de remède inachevé', 'une clef rouillée de la chapelle'],
+      secrets: ['le puits a été empoisonné par un fragment démoniaque', 'le guérisseur savait que la peste venait du Voile', 'un homme du Cercle de Cendre est passé avant vous'],
+      quests: ['sauver l’enfant de Mira', 'trouver les trois ingrédients du remède', 'convaincre les survivants de Val-Cendre'],
+      enemies: ['Villageois contaminé', 'Rat pestiféré', 'Zombie malade', 'Pillard revenu du champ'],
+      forward: 'Avancer vers la place du village', investigate: 'Interroger les survivants', risk: 'Forcer une maison barricadée',
+      exit: 'Val-Cendre n’est plus seulement un village pestiféré : c’est la preuve que la guerre continue dans l’eau, les murs et les corps.',
+    },
+    {
+      titles: ['La gorge du puits', 'Sous les pierres noires', 'Les racines malades', 'L’eau qui murmure', 'Le cœur de la peste'],
+      scenes: ['Vous descendez sous Val-Cendre par les pierres humides du vieux puits.', 'Les tunnels sous le village respirent comme une bête endormie.', 'L’eau noire reflète votre visage, mais pas exactement votre regard.'],
+      details: ['Des racines noires serrent les pierres comme des doigts', 'Une vapeur froide remonte du fond et porte des voix d’enfants', 'Des symboles rouges ont été tracés sous la mousse'],
+      dangers: ['un esprit pestiféré garde la source', 'l’eau tente de noircir vos veines', 'le fragment démoniaque pulse dans la pierre centrale'],
+      npcs: ['La voix de Mira semble vous suivre depuis la surface', 'Une âme noyée répète que le prêtre a menti', 'Un ancien guérisseur apparaît dans un reflet trouble'],
+      objects: ['une racine noire encore vivante', 'une fiole d’eau bénite fendue', 'un fragment du puits'],
+      secrets: ['la peste est une fuite du monde démoniaque', 'les fragments peuvent soigner ou corrompre', 'la marque inconnue semble pouvoir refermer les petites failles'],
+      quests: ['purifier le puits', 'détruire le fragment démoniaque', 'sauver Val-Cendre avant la nuit complète'],
+      enemies: ['Noyé pestiféré', 'Goule du puits', 'Esprit malade', 'Possédé de Val-Cendre'],
+      forward: 'Descendre plus bas', investigate: 'Étudier les racines noires', risk: 'Traverser l’eau contaminée',
+      exit: 'Lorsque vous remontez, l’air de Val-Cendre a changé. Le village n’est peut-être pas sauvé, mais la source du mal a été révélée.',
+      bossIntro: 'Le puits vomit une brume pâle. Une forme d’enfant et de noyé se recompose devant vous.',
+    },
+    {
+      titles: ['Les croix penchées', 'La fosse ouverte', 'Le registre des morts', 'La crypte noire', 'Les soldats sans repos'],
+      scenes: ['La route du cimetière est bordée de croix fraîches et de tombes trop nombreuses.', 'Le cimetière des soldats s’étend dans la brume, couvert de bannières à moitié enterrées.', 'Des tombes ouvertes montrent que certains morts ont été déplacés après la bataille.'],
+      details: ['Un registre trempé porte votre nom, mais la ligne a été rayée', 'Des traces d’ossements mènent vers une crypte entrouverte', 'Une épée rouillée pointe vers le nord comme une accusation'],
+      dangers: ['les morts obéissent à un nécromancien', 'la peste et la nécromancie utilisent la même énergie noire', 'un capitaine mort-vivant garde encore les faux ordres'],
+      npcs: ['Un capitaine mort-vivant réclame le nom du traître', 'Un prisonnier attaché dans la crypte vous supplie de le libérer', 'Une ombre de soldat vous appelle Kaël'],
+      objects: ['le registre des morts', 'une clef d’os', 'un livre de chair interdit'],
+      secrets: ['Kaël a été déclaré mort puis effacé', 'les armées ont reçu de faux ordres', 'la bataille a nourri un rituel nécromantique'],
+      quests: ['libérer les prisonniers de la crypte', 'découvrir qui a falsifié les ordres', 'brûler ou garder le livre de chair'],
+      enemies: ['Squelette de soldat', 'Capitaine mort-vivant', 'Goule de fosse', 'Expérience de chair'],
+      forward: 'Suivre les tombes ouvertes', investigate: 'Lire les noms des morts', risk: 'Descendre dans une fosse commune',
+      exit: 'La crypte s’effondre derrière vous. Vous repartez avec une certitude : votre mort officielle était un mensonge utile.',
+      bossIntro: 'Dans la crypte, les os forment un cercle. Au centre, une silhouette lève un livre cousu de peau.',
+    },
+    {
+      titles: ['La lisière calcinée', 'Les cendres vivantes', 'La clairière malade', 'Les cages des braconniers', 'Le cœur brûlé'],
+      scenes: ['La forêt brûlée commence par une odeur d’orage ancien et de bois mort.', 'Les arbres calcinés se penchent au-dessus du chemin comme des juges noirs.', 'Sous vos pas, la cendre conserve des empreintes qui ne sont pas toutes humaines.'],
+      details: ['Un sentier réel disparaît sous une voûte de feuillage sombre', 'Une plume de griffon est coincée dans une cage abandonnée', 'La sève rouge d’un arbre forme presque un symbole'],
+      dangers: ['les braconniers profitent du chaos pour capturer les dernières créatures', 'la forêt elle-même souffre d’un fragment démoniaque', 'un ent corrompu frappe tout ce qui approche'],
+      npcs: ['Un jeune elfe blessé vous observe derrière des branches', 'Un esprit de clairière prend la forme d’une enfant de feuilles', 'Un braconnier affirme que la forêt était morte avant son arrivée'],
+      objects: ['une plume de griffon', 'une carte des pistes secrètes', 'un cœur de bois noir'],
+      secrets: ['Sylvéria sait déjà que le Voile se fissure', 'les esprits naturels semblent reconnaître la marque inconnue', 'un passage secret mène vers Brumeval'],
+      quests: ['libérer les captifs des braconniers', 'apaiser l’esprit de la forêt', 'retirer le fragment du cœur brûlé'],
+      enemies: ['Braconnier', 'Chef braconnier', 'Ronce animée', 'Ent corrompu'],
+      forward: 'Suivre le sentier sous les branches', investigate: 'Écouter les murmures des arbres', risk: 'Couper à travers les ronces noires',
+      exit: 'La forêt s’ouvre enfin sur une route plus froide. Brumeval attend au-delà des branches.',
+      bossIntro: 'La clairière tremble. Un arbre immense se redresse, sa douleur changée en rage.',
+    },
+    {
+      titles: ['La grille de Brumeval', 'Le hall aux portraits', 'La cave aux cercueils', 'Le salon rouge', 'Le souvenir enfermé'],
+      scenes: ['Le manoir de Brumeval surgit dans la brume, trop élégant pour être honnête.', 'Les grilles s’ouvrent sans un grincement, comme si quelqu’un vous attendait.', 'Dans le hall, des portraits suivent votre passage avec des regards peints trop vivants.'],
+      details: ['Un portrait porte votre visage et le nom Kaël Ardent', 'Des traces de sang frais descendent vers la cave', 'Un rideau bouge alors qu’aucune fenêtre n’est ouverte'],
+      dangers: ['les vampires de Brumeval connaissent votre passé', 'les Lames du Voile testent votre identité', 'chaque souvenir offert ici réclame un prix'],
+      npcs: ['Une servante vampire prononce votre nom sans hésiter', 'Un assassin masqué vous demande de prouver que vous êtes encore Kaël', 'Sire Vael Draven vous accueille comme un vieil invité'],
+      objects: ['l’anneau de Brumeval', 'un journal des Veilleurs', 'une lame cérémonielle des Lames du Voile'],
+      secrets: ['vous avez caché une partie de votre mémoire à Brumeval', 'Azhraël ne peut posséder entièrement ce qu’il ne peut nommer', 'les vampires peuvent devenir alliés ou ennemis jurés'],
+      quests: ['libérer les prisonniers de la cave', 'réussir le duel rituel des Lames', 'refuser ou accepter le pacte vampirique'],
+      enemies: ['Vampire mineur', 'Assassin du Voile', 'Servante vampire', 'Sire Vael Draven'],
+      forward: 'Entrer plus profondément dans le manoir', investigate: 'Examiner les portraits', risk: 'Descendre seul dans la cave',
+      exit: 'Brumeval disparaît derrière vous, mais le souvenir qu’il gardait continue de brûler dans votre crâne.',
+      bossIntro: 'Dans la chambre du maître, les rideaux se soulèvent sans vent. Un vampire ancien se tient devant le balcon.',
+    },
+    {
+      titles: ['Les pierres sacrées', 'L’autel fendu', 'Le reliquaire', 'Les hommes en noir', 'Le jugement de la marque'],
+      scenes: ['La chapelle en ruine se dresse sur une colline battue par le vent.', 'Entre les arches brisées, votre marque pulse comme un second cœur.', 'Des éclats de vitraux craquent sous vos pas, reflétant une lumière pâle.'],
+      details: ['Un reliquaire d’argent repose derrière l’autel fendu', 'Des cendres rouges dessinent le cercle de la Guilde Noire', 'Une fresque représente les six royaumes autour d’un portail fermé'],
+      dangers: ['la chapelle peut rejeter un héros trop corrompu', 'la Guilde Noire vous rattrape ici', 'l’Éclat du Voile attire les serviteurs d’Azhraël'],
+      npcs: ['Un prêtre mort depuis longtemps murmure encore dans la nef', 'Un adepte du Cercle vous propose de rendre votre mémoire', 'Les alliés sauvés sur votre route peuvent vous rejoindre'],
+      objects: ['l’Éclat du Voile', 'l’anneau de cendre', 'une relique fendue'],
+      secrets: ['les six royaumes gardent encore les sceaux', 'le Livre II mènera à la guerre totale', 'la foi et la corruption changent les fins possibles'],
+      quests: ['obtenir l’Éclat du Voile', 'refuser le marché du Cercle', 'rassembler les alliés avant la faille'],
+      enemies: ['Garde noir du Cercle', 'Adepte du Cercle', 'Mercenaire noir', 'Possédé de la chapelle'],
+      forward: 'Avancer vers l’autel', investigate: 'Étudier la fresque des six royaumes', risk: 'Forcer le reliquaire',
+      exit: 'La chapelle vous livre sa dernière lumière. Au loin, la terre tremble : la première faille s’ouvre.',
+      bossIntro: 'Les hommes en noir encerclent la nef. Leur chef lève un anneau rouge vers votre marque.',
+    },
+    {
+      titles: ['Le sanctuaire effondré', 'Les corps du rituel', 'La faille rouge', 'La voix d’Azhraël', 'Le dernier verrou'],
+      scenes: ['Le sanctuaire de la faille n’est plus qu’un cercle de colonnes brisées.', 'La réalité se fend devant vous comme une peau trop tendue.', 'Un ciel rouge apparaît dans la déchirure, au-delà du monde.'],
+      details: ['Six corps sont disposés autour du portail, un pour chaque peuple', 'Les pierres tremblent au rythme d’un cœur immense', 'Votre marque devient douloureuse, presque insoutenable'],
+      dangers: ['le rituel s’accélère à chaque instant', 'un démon tente de se hisser dans Astréa', 'Azhraël cherche à entendre votre vrai nom'],
+      npcs: ['Élyane peut couvrir votre avancée si elle vous fait confiance', 'Borik peut renforcer votre arme s’il vous doit la vie', 'Rogh peut briser la ligne ennemie si vous l’avez aidé'],
+      objects: ['l’Éclat du Voile', 'un fragment démoniaque brûlant', 'la dernière cendre du rituel'],
+      secrets: ['la première faille n’est qu’un essai', 'les six sceaux seront la cible du Livre II', 'Kaël était un Veilleur du Voile'],
+      quests: ['interrompre le rituel final', 'fermer la première faille', 'choisir la voie du Voile ou la voie sombre'],
+      enemies: ['Ombre de la faille', 'Garde noir', 'Adepte final', 'Démon mineur de la faille'],
+      forward: 'Approcher du portail', investigate: 'Étudier le cercle des six corps', risk: 'Frapper la faille directement',
+      exit: 'La faille vacille. Ce que vous avez gagné ici ne sauvera pas Astréa, mais cela vous donne une chance de poursuivre.',
+      bossIntro: 'Le portail s’élargit. Une griffe noire se pose sur le sol d’Astréa.',
+    },
+  ]
+
+  const livreGeneric = [
+    {
+      titles: ['Une couronne en guerre', 'La route des sceaux', 'Le serment fragile', 'La frontière armée', 'Le prix de l’alliance'],
+      scenes: [`Vous progressez dans ${zone.name}, où chaque bannière semble accuser une autre bannière.`, `Dans ${zone.name}, les rumeurs vont plus vite que les cavaliers.`, `Les routes de ${zone.name} portent la fatigue d’un royaume prêt à se briser.`],
+      details: ['Un messager cache un sceau sous son manteau', 'Une patrouille vous observe sans savoir si vous êtes un allié', 'Une carte royale a été déchirée et recousue à la hâte'],
+      dangers: ['une guerre civile menace d’éclater', 'un conseiller possédé influence le pouvoir', 'la Guilde Noire achète des témoins'],
+      npcs: ['Un capitaine épuisé vous demande de choisir un camp', 'Une diplomate affirme que la paix est encore possible', 'Un prisonnier d’un peuple ennemi prétend détenir la vérité'],
+      objects: ['un sauf-conduit royal', 'un fragment de sceau', 'une lettre diplomatique codée'],
+      secrets: ['un sceau a déjà été copié par magie noire', 'certains ennemis ont été manipulés', 'une alliance sauvera des vies dans le Livre III'],
+      quests: ['obtenir la confiance d’un royaume', 'déjouer une fausse accusation', 'récupérer un fragment de sceau'],
+      enemies: ['Mercenaire royal', 'Assassin', 'Possédé de cour', 'Champion corrompu'],
+      forward: 'Poursuivre la mission des sceaux', investigate: 'Chercher la vérité politique', risk: 'Forcer une audience dangereuse',
+    },
+  ]
+
+  const livre3 = [
+    {
+      titles: ['La dernière marche', 'La cendre du monde', 'Le seuil impossible', 'Le vrai nom', 'Le choix final'],
+      scenes: [`Dans ${zone.name}, chaque pas ressemble à une fin.`, `La guerre finale transforme ${zone.name} en frontière entre Astréa et l’abîme.`, `${zone.name} n’est plus seulement un lieu : c’est une épreuve pour tout ce que vous avez choisi.`],
+      details: ['Les alliés gagnés autrefois tiennent encore une ligne fragile', 'Un souvenir ancien vous revient au pire moment', 'La corruption offre une solution trop facile'],
+      dangers: ['Azhraël connaît presque votre vrai nom', 'le portail avale peu à peu la réalité', 'un ancien compagnon pourrait être possédé'],
+      npcs: ['Un allié vous rappelle une dette ancienne', 'Un survivant vous confie le dernier message d’un royaume tombé', 'Une voix lointaine hésite entre vous guider et vous condamner'],
+      objects: ['une clef du Voile', 'une lame forgée contre les démons', 'un éclat de couronne brisée'],
+      secrets: ['la vraie fin exige assez de mémoire', 'la corruption peut vaincre Azhraël sans sauver Astréa', 'le sacrifice n’est pas toujours la mort'],
+      quests: ['protéger les derniers alliés', 'tenir la ligne du Voile', 'affronter le vrai nom d’Azhraël'],
+      enemies: ['Démon majeur', 'Général spectral', 'Dragon corrompu', 'Avatar d’Azhraël'],
+      forward: 'Avancer vers le portail', investigate: 'Chercher la vraie fin', risk: 'Utiliser la corruption contre l’abîme',
+    },
+  ]
+
+  if (bookId === 1) return { ...base, ...livre1[zoneIndex] }
+  if (bookId === 2) return { ...base, ...livreGeneric[0] }
+  return { ...base, ...livre3[0] }
 }
 
 function mkEnemy(bookId, id, name, boss) {
@@ -451,7 +638,7 @@ export default function App() {
 }
 
 function Home({ selectedBook, setSelectedBook, rollHero, confirmStart, rolledHero, pendingClass, savedAvailable, load, erase }) {
-  return <main className="home"><section className="panel heroBox"><div className="kicker">Version finale · Trilogie livre-jeu RPG</div><h1>Les Cendres d’Astréa</h1><h2>Combats · quêtes · secrets · illustrations noir et blanc</h2><p className="intro">Un homme se réveille amnésique sous un tas de cadavres, au milieu d’un champ de bataille. Le monde est en guerre, les épidémies ravagent les villages, les guildes se déchirent et un démon primordial manipule les six royaumes pour ouvrir un portail vers la dimension démoniaque.</p>{savedAvailable && <div className="btnbar" style={{marginTop:16}}><button className="btn good" onClick={load}>Continuer la sauvegarde</button><button className="btn bad" onClick={erase}>Effacer la sauvegarde</button></div>}<h2 style={{marginTop:24}}>Choisis le livre</h2><div className="books">{Object.entries(BOOKS).map(([id,b]) => <button key={id} className="selectCard" onClick={() => setSelectedBook(Number(id))} style={{outline: selectedBook===Number(id)?'2px solid #f1c36d':'none'}}><h3>{b.title}</h3><p>{b.subtitle}</p><b>Aventure longue</b></button>)}</div><h2 style={{marginTop:24}}>Choisis ton héros</h2><div className="classes">{Object.entries(CLASSES).map(([k,c]) => <button key={k} className="selectCard" onClick={() => rollHero(k)} style={{outline: pendingClass===k?'2px solid #f1c36d':'none'}}><h3>{c.nom}</h3><p>{c.desc}</p><small>Clique pour préparer le lancer de dés</small></button>)}</div>{rolledHero && <div className="rollBox"><div className="kicker">Création du héros · lancer de dés</div><h2>Points de capacité obtenus</h2><p className="intro">Les dés déterminent tes capacités. Tu peux relancer avant de commencer l’aventure.</p><div className="diceGrid"><Stat label="Dé Force" value={rolledHero.rolls.force}/><Stat label="Dé Dextérité" value={rolledHero.rolls.dex}/><Stat label="Dé Chance" value={rolledHero.rolls.chance}/><Stat label="Dé Esprit" value={rolledHero.rolls.esprit}/><Stat label="Dés PV" value={rolledHero.rolls.pv}/><Stat label="Dé Mana" value={rolledHero.rolls.mana}/></div><div className="diceGrid finalStats"><Stat label="Force finale" value={rolledHero.force}/><Stat label="Dextérité finale" value={rolledHero.dex}/><Stat label="Chance finale" value={rolledHero.chance}/><Stat label="Esprit final" value={rolledHero.esprit}/><Stat label="PV max" value={rolledHero.pvMax}/><Stat label="Mana max" value={rolledHero.manaMax}/></div><div className="btnbar" style={{marginTop:16}}><button className="btn" onClick={() => rollHero(pendingClass)}>Relancer les dés</button><button className="btn primary" onClick={confirmStart}>Commencer l’aventure</button></div></div>}</section></main>
+  return <main className="home"><section className="panel heroBox"><div className="kicker">V4 · Livre-jeu RPG propre</div><h1>Les Cendres d’Astréa</h1><h2>Combats · quêtes · secrets · illustrations noir et blanc</h2><p className="intro">Un homme se réveille amnésique sous un tas de cadavres, au milieu d’un champ de bataille. Le monde est en guerre, les épidémies ravagent les villages, les guildes se déchirent et quelque chose, dans l’ombre, pousse les six royaumes vers un désastre plus ancien que leurs querelles.</p>{savedAvailable && <div className="btnbar" style={{marginTop:16}}><button className="btn good" onClick={load}>Continuer la sauvegarde</button><button className="btn bad" onClick={erase}>Effacer la sauvegarde</button></div>}<h2 style={{marginTop:24}}>Choisis le livre</h2><div className="books">{Object.entries(BOOKS).map(([id,b]) => <button key={id} className="selectCard" onClick={() => setSelectedBook(Number(id))} style={{outline: selectedBook===Number(id)?'2px solid #f1c36d':'none'}}><h3>{b.title}</h3><p>{b.subtitle}</p><b>Aventure longue</b></button>)}</div><h2 style={{marginTop:24}}>Choisis ton héros</h2><div className="classes">{Object.entries(CLASSES).map(([k,c]) => <button key={k} className="selectCard" onClick={() => rollHero(k)} style={{outline: pendingClass===k?'2px solid #f1c36d':'none'}}><h3>{c.nom}</h3><p>{c.desc}</p><small>Clique pour préparer le lancer de dés</small></button>)}</div>{rolledHero && <div className="rollBox"><div className="kicker">Création du héros · lancer de dés</div><h2>Points de capacité obtenus</h2><p className="intro">Les dés déterminent tes capacités. Tu peux relancer avant de commencer l’aventure.</p><div className="diceGrid"><Stat label="Dé Force" value={rolledHero.rolls.force}/><Stat label="Dé Dextérité" value={rolledHero.rolls.dex}/><Stat label="Dé Chance" value={rolledHero.rolls.chance}/><Stat label="Dé Esprit" value={rolledHero.rolls.esprit}/><Stat label="Dés PV" value={rolledHero.rolls.pv}/><Stat label="Dé Mana" value={rolledHero.rolls.mana}/></div><div className="diceGrid finalStats"><Stat label="Force finale" value={rolledHero.force}/><Stat label="Dextérité finale" value={rolledHero.dex}/><Stat label="Chance finale" value={rolledHero.chance}/><Stat label="Esprit final" value={rolledHero.esprit}/><Stat label="PV max" value={rolledHero.pvMax}/><Stat label="Mana max" value={rolledHero.manaMax}/></div><div className="btnbar" style={{marginTop:16}}><button className="btn" onClick={() => rollHero(pendingClass)}>Relancer les dés</button><button className="btn primary" onClick={confirmStart}>Commencer l’aventure</button></div></div>}</section></main>
 }
 
 function Combat({ combat, hero, attack, chanceMove, cast, restItem }) {
