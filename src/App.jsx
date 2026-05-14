@@ -59,7 +59,7 @@ Un instant passe.
 Puis une main morte vous agrippe la cheville. Un visage à moitié arraché se relève dans la boue. Ce soldat n'a plus de regard, mais il cherche encore une gorge à mordre.`, enemy: mkEnemy(1, 5, 'Cadavre animé', false), blocking: true, choices: [ { label: 'Combattre le cadavre animé', combat: true }, { label: 'Tenter de vous dégager — test de Force', test: 'force', dc: 11, success: 13, failCombat: true } ] })
   add(6, { title: 'La bannière au griffon', zone: 'Le Champ des Morts', art: 'battlefield', text: `Vous rampez derrière une bannière bleue déchirée. Un griffon argenté y disparaît sous la boue.
 
-Près du mât brisé, un officier mort serre encore une épée courte. Ses yeux ouverts semblent vous accuser d'avoir survécu à sa place.`, choices: [ { label: 'Prendre l\'épée du mort', effect: { item: 'Épée du griffon' }, goto: 14 }, { label: 'Lire les insignes de la bannière', effect: { memoire: 1, secret: 'Aldéris combattait ici' }, goto: 15 }, { label: 'Vous cacher sous la bannière', goto: 9 } ] })
+Près du mât brisé, un officier mort serre encore une épée courte. Ses yeux ouverts semblent vous accuser d'avoir survécu à sa place.`, choices: [ { label: 'Prendre l\'épée et l\'armure de l\'officier', effect: { item: 'Épée du griffon', item2: 'Armure de cuir' }, goto: 14 }, { label: 'Lire les insignes de la bannière', effect: { memoire: 1, secret: 'Aldéris combattait ici' }, goto: 15 }, { label: 'Vous cacher sous la bannière', goto: 9 } ] })
   add(7, { title: 'Une arme dans la boue', zone: 'Le Champ des Morts', art: 'battlefield', text: `Vous fouillez autour de vous avec urgence. Trois armes ont survécu au massacre : une épée brisée, une lance de fantassin et une hache fendue.
 
 Aucune n'est belle. Toutes peuvent vous sauver.`, choices: [ { label: 'Prendre l\'épée brisée', effect: { item: 'Épée brisée' }, goto: 14 }, { label: 'Prendre la lance de fantassin', effect: { item: 'Lance de fantassin' }, goto: 14 }, { label: 'Prendre la hache fendue', effect: { item: 'Hache fendue' }, goto: 14 } ] })
@@ -200,7 +200,7 @@ Il crache dans le feu.
 Les autres pillards reculent. Ce duel décidera si vous partez libre ou attaché.`, enemy: mkEnemy(1, 38, 'Marn le Crochu', true), blocking: true, choices: [ { label: 'Combattre Marn', combat: true }, { label: 'Le provoquer pour le rendre imprudent — test d\'Esprit', test: 'esprit', dc: 13, success: 39, failCombat: true } ] })
   add(39, { title: 'La carte tachée', zone: 'Camp des Pillards', art: 'battlefield', text: `Vous repartez avec une carte grossière prise au camp. Trois lieux sont entourés : Val-Cendre, le vieux cimetière et Brumeval.
 
-À côté de Brumeval, une main tremblée a écrit : ne pas entrer après le coucher du soleil.`, choices: [ { label: 'Garder la carte et rejoindre Val-Cendre', effect: { item: 'Carte tachée', secret: 'Brumeval est lié aux routes des pillards' }, goto: 36 } ] })
+À côté de Brumeval, une main tremblée a écrit : ne pas entrer après le coucher du soleil.`, choices: [ { label: 'Garder la carte et fouiller le camp', effect: { item: 'Carte tachée', item2: 'Bouclier de bois', or: 5, secret: 'Brumeval est lié aux routes des pillards' }, goto: 36 } ] })
   add(40, { title: 'Le métal céleste', zone: 'Route de Val-Cendre', art: 'battlefield', text: `La boîte naine s'ouvre dans un claquement sec. À l'intérieur repose un éclat de métal pâle, trop froid pour ce monde.
 
 Une rune gravée sur le couvercle dit simplement : pour ce qui franchit le Voile.`, choices: [ { label: 'Refermer la boîte et la garder', effect: { item: 'Métal céleste', secret: 'Le métal céleste peut blesser les créatures du Voile' }, goto: 36 } ] })
@@ -216,7 +216,7 @@ La rue principale est vide, mais pas silencieuse. Derrière les volets, des gens
 Au centre du village, le vieux puits semble plus noir que la nuit autour.`, choices: [ { label: 'Aller vers le puits', goto: 49 }, { label: 'Chercher les survivants', goto: 50 }, { label: 'Entrer dans la maison du guérisseur', goto: 51 } ] })
   add(47, { title: 'Les jardins abandonnés', zone: 'Val-Cendre', art: 'village', text: `Vous contournez le village par les jardins. Les potagers sont noyés de mauvaises herbes. Des paniers de légumes pourrissent près des portes.
 
-Vous découvrez une trace fraîche menant à l'arrière de la maison du guérisseur. Quelqu'un y est entré récemment.`, choices: [ { label: 'Suivre la trace jusqu\'au guérisseur', goto: 51 }, { label: 'Revenir vers la place', goto: 49 }, { label: 'Inspecter une remise verrouillée — test de Dextérité', test: 'dex', dc: 12, success: 52, fail: 50 } ] })
+Vous découvrez une trace fraîche menant à l'arrière de la maison du guérisseur. Un malade, les yeux vides, surgit d'un taillis mort.`, enemy: mkEnemy(1, 47, 'Malade en crise', false), blocking: true, choices: [ { label: 'Combattre le malade', combat: true }, { label: 'Fuir vers le guérisseur — test de Dextérité', test: 'dex', dc: 11, success: 51, failCombat: true }, { label: 'L\'immobiliser sans le blesser — test de Force', test: 'force', dc: 12, success: 55, failCombat: true } ] })
   add(48, { title: 'Les marques rouges', zone: 'Val-Cendre', art: 'village', text: `Les marques de quarantaine ne sont pas toutes identiques. Certaines ont été peintes par peur. D'autres forment un alphabet rituel, dissimulé sous les lettres maladroites du mot PESTE.
 
 Val-Cendre n'a pas seulement été contaminé. Il a été préparé.`, choices: [ { label: 'Suivre les marques jusqu\'au puits', effect: { secret: 'Les maisons marquées forment un rituel autour du puits' }, goto: 49 }, { label: 'Chercher qui a peint ces signes', goto: 53 } ] })
@@ -235,10 +235,10 @@ Un enfant pleure derrière les planches. Un adulte étouffe une quinte de toux.`
 Sur la table, un journal taché d'encre reste lisible. La dernière page porte une phrase soulignée trois fois : la maladie ne vient pas des rats. Elle monte du puits.`, choices: [ { label: 'Lire le journal en entier', effect: { secret: 'La peste vient du puits', quest: 'Préparer le remède de Val-Cendre' }, goto: 57 }, { label: 'Fouiller la cave du guérisseur', goto: 58 }, { label: 'Chercher les ingrédients du remède', goto: 59 } ] })
   add(52, { title: 'La remise du guérisseur', zone: 'Val-Cendre', art: 'village', text: `La serrure cède. Dans la remise, vous trouvez des bandages secs, une ration et un petit couteau de récolte.
 
-Sur le mur, quelqu'un a tracé un plan du village avec trois cercles autour du puits, de la chapelle et de la maison du guérisseur.`, choices: [ { label: 'Prendre ce qui peut servir', effect: { item: 'Ration', item2: 'Couteau de récolte', secret: 'Le guérisseur reliait le puits, la chapelle et sa maison' }, goto: 51 } ] })
+Sur le mur, quelqu'un a tracé un plan du village avec trois cercles autour du puits, de la chapelle et de la maison du guérisseur.`, choices: [ { label: 'Prendre ce qui peut servir', effect: { item: 'Ration', item2: 'Armure de cuir', secret: 'Le guérisseur reliait le puits, la chapelle et sa maison' }, goto: 51 } ] })
   add(53, { title: 'La main qui a peint', zone: 'Val-Cendre', art: 'village', text: `Dans une ruelle, vous trouvez un pot de peinture rouge renversé. À côté, des empreintes ne vont pas vers une maison, mais vers la chapelle.
 
-Un témoin a peut-être vu l'homme en noir. Ou l'a laissé entrer.`, choices: [ { label: 'Suivre les empreintes vers la chapelle', goto: 54 }, { label: 'Retourner à la place', goto: 49 } ] })
+Un mercenaire se retourne brusquement. Il portait lui-même ces marques. Il ne veut pas de témoin.`, enemy: mkEnemy(1, 53, 'Mercenaire du Cercle', false), blocking: true, choices: [ { label: 'Combattre le mercenaire', combat: true }, { label: 'L\'interroger — test d\'Esprit', test: 'esprit', dc: 13, success: 61, failCombat: true } ] })
   add(54, { title: 'La chapelle barricadée', zone: 'Val-Cendre', art: 'chapel', text: `La chapelle de Val-Cendre est bloquée par des bancs, des poutres et des prières.
 
 Le prêtre parle derrière la porte : « Si vous venez du puits, partez. Si vous venez pour mentir, partez aussi. »
@@ -295,7 +295,7 @@ Ce chemin évite la corde et les regards, mais pas ce qui attend en dessous.`, c
   // Acte IV — Puits Maudit
   add(76, { title: 'Descendre dans le puits', zone: 'Le Puits Maudit', art: 'well', text: `La descente commence dans une odeur de corde mouillée et de pierre froide.
 
-Plus bas, les bruits du village disparaissent. Il ne reste que l'eau qui goutte, votre respiration, et des murmures que vous n'êtes pas certain d'entendre avec vos oreilles.`, choices: [ { label: 'Continuer jusqu\'au fond', goto: 77 }, { label: 'Utiliser Lueur pâle pour éclairer', effect: { mana: -4, memoire: 1 }, goto: 78 }, { label: 'Remonter chercher de l\'aide', goto: 70 } ] })
+Plus bas, les bruits du village disparaissent. Il ne reste que l'eau qui goutte, votre respiration, et des murmures que vous n'êtes pas certain d'entendre avec vos oreilles.`, choices: [ { label: 'Continuer jusqu\'au fond', goto: 77 }, { label: 'Utiliser Lueur pâle pour éclairer', effect: { mana: -4, memoire: 1 }, goto: 78 }, { label: 'Remonter chercher des survivants avant de descendre', goto: 87 } ] })
   add(70, { title: 'Demander de l\'aide', zone: 'Val-Cendre', art: 'village', text: `Vous rassemblez ceux qui peuvent encore tenir debout. Les survivants ont peur du puits, mais certains acceptent de tenir la corde, de garder la place ou de prier à la chapelle.
 
 Ce soutien ne gagnera pas le combat à votre place. Il peut seulement vous empêcher d'être seul.`, choices: [ { label: 'Redescendre avec leur aide', effect: { reputation: 1, flag: 'aide_val_cendre' }, goto: 76 } ] })
@@ -368,7 +368,7 @@ Des survivants sont attachés à des piliers. Leurs yeux ne sont pas morts, mais
 
 L'un d'eux vous glisse une clef d'os dans la main.
 
-« Il garde les noms derrière l'autel », murmure-t-il.`, choices: [ { label: 'Prendre la clef d\'os', effect: { item: 'Clef d\'os', done: 'Sauver les prisonniers du cimetière', reputation: 2 }, goto: 107 } ] })
+« Il garde les noms derrière l'autel », murmure-t-il.`, choices: [ { label: 'Prendre la clef d\'os', effect: { item: 'Clef d\'os', item2: 'Bouclier de fer', done: 'Sauver les prisonniers du cimetière', reputation: 2 }, goto: 107 } ] })
   add(106, { title: 'Le livre de chair', zone: 'Cimetière des Soldats', art: 'cemetery', text: `Les pages ne sont pas de papier. Elles gardent la chaleur des vivants.
 
 Vous pourriez apprendre à parler aux morts, peut-être même à leur arracher un souvenir. Mais chaque ligne semble vous lire en retour.`, choices: [ { label: 'Brûler le livre', effect: { corruption: -1, memoire: 1, secret: 'La nécromancie et la peste utilisent la même source' }, goto: 107 }, { label: 'Garder le livre', effect: { item: 'Livre de chair', spell: 'Flamme spectrale', corruption: 3 }, goto: 107 } ] })
@@ -389,7 +389,7 @@ Votre nom y est écrit, puis barré. À côté : ne pas laisser le Cercle trouve
 La crypte tremble. Le nécromancien comprend que vous avez trouvé ce qu'il gardait.`, choices: [ { label: 'Affronter le gardien du registre', effect: { secret: 'Le Cercle cherchait votre corps après la bataille', memoire: 3 }, combat: true } ], enemy: mkEnemy(1, 109, 'Nécromancien furieux', true), blocking: true })
   add(110, { title: 'La crypte s\'effondre', zone: 'Cimetière des Soldats', art: 'cemetery', text: `La mort du nécromancien brise le contrôle qu'il exerçait sur la crypte. Les os retombent. Les chaînes se desserrent.
 
-Dans le silence, un souvenir vous revient : vous couriez vers une forêt en flammes, poursuivi par des hommes en noir. Quelque chose vous attendait là-bas.`, choices: [ { label: 'Quitter le cimetière vers la forêt brûlée', effect: { done: 'Vaincre le nécromancien', memoire: 3, xp: 8 }, goto: 121 } ] })
+Dans le silence, un souvenir vous revient : vous couriez vers une forêt en flammes, poursuivi par des hommes en noir. Quelque chose vous attendait là-bas.`, choices: [ { label: 'Ramasser l\'épée bénite parmi les os et partir', effect: { item: 'Épée de l\'aurore', done: 'Vaincre le nécromancien', memoire: 3, xp: 8, or: 12 }, goto: 121 } ] })
 
   // Nodes 111-120 are optional cemetery detours with forward-only routes, not loops
   add(111, { title: 'Le caveau des officiers', zone: 'Cimetière des Soldats', art: 'cemetery', text: `Un caveau secondaire contient des insignes d'officiers arrachés. Certains appartiennent à Aldéris, d'autres aux nains, aux orques, aux barbares.
@@ -422,6 +422,17 @@ Elle vient de quelque chose qui brûle encore sous la terre.`, choices: [ { labe
   add(120, { title: 'La promesse aux morts', zone: 'Cimetière des Soldats', art: 'cemetery', text: `Vous quittez le cimetière avec plus de noms que de réponses.
 
 Derrière vous, les tombes restent ouvertes. Devant vous, la forêt brûlée attend. Si les morts disent vrai, elle garde la suite de votre mémoire.`, choices: [ { label: 'Entrer dans la forêt brûlée', goto: 121 } ] })
+
+  add(87, { title: 'Appel aux survivants', zone: 'Val-Cendre', art: 'village',
+    text: `Vous remontez la corde. Les survivants de Val-Cendre vous attendent dans la lumière grise.
+
+Mira vous tend une torche. L'ancien milicien vérifie vos nœuds. Le prêtre murmure une prière courte.
+
+Ce soutien ne descendra pas avec vous. Mais il change quelque chose dans votre façon de tenir la corde.`,
+    choices: [
+      { label: 'Redescendre avec leur soutien', effect: { reputation: 1, pv: 4, flag: 'aide_val_cendre' }, goto: 76 }
+    ]
+  })
 
   return n
 })()
@@ -473,7 +484,7 @@ const BOOKS = {
     zones: [
       { start: 1, end: 35, name: 'Le Champ des Morts', art: 'battlefield', theme: 'cadavres, pillards, goules, premiers souvenirs' },
       { start: 36, end: 75, name: 'Val-Cendre', art: 'village', theme: 'village pestiféré, survivants, enquête' },
-      { start: 76, end: 105, name: 'Le Puits Maudit', art: 'well', theme: 'source de la peste, esprits, racines noires' },
+      { start: 76, end: 95, name: 'Le Puits Maudit', art: 'well', theme: 'source de la peste, esprits, racines noires' },
       { start: 96, end: 120, name: 'Le Cimetière des Soldats', art: 'cemetery', theme: 'squelettes, nécromancien, registre des morts' },
       { start: 121, end: 165, name: 'La Forêt Brûlée', art: 'forest', theme: 'braconniers, esprits de la forêt, ent corrompu' },
       { start: 166, end: 210, name: 'Le Manoir de Brumeval', art: 'manor', theme: 'vampires, assassins, fragments de mémoire' },
@@ -636,7 +647,7 @@ function generatedPassage(bookId, id, hero) {
     }
   }
 
-  const isCombat = local % 8 === 0 || local % 13 === 0
+  const isCombat = local % 5 === 0 || local % 9 === 0
   const isQuest = local % 11 === 0
   const isSecret = local % 9 === 0
   const isRest = local % 17 === 0
@@ -932,16 +943,23 @@ function getShield(items) {
 }
 
 function mkEnemy(bookId, id, name, boss) {
-  const scale = bookId * 5 + Math.floor(id / 20)
+  // Scale progressif : faible en début de livre, croissant vers la fin
+  // Livre 1 id 1-100 : scale 0-5 ; id 100-200 : scale 5-10 ; id 200-300 : scale 10-15
+  const bookBase = (bookId - 1) * 8
+  const idScale = Math.floor(id / 30)
+  const scale = bookBase + idScale
   return {
     nom: name,
-    pvMax: (boss ? 45 : 20) + scale * (boss ? 5 : 2),
-    attaque: (boss ? 8 : 5) + Math.floor(scale / 2),
-    defense: (boss ? 4 : 1) + Math.floor(scale / 5),
-    xp: (boss ? 12 : 3) + scale,
-    or: boss ? 15 + scale : 3 + Math.floor(scale / 2),
+    pvMax: (boss ? 40 : 14) + scale * (boss ? 6 : 3),
+    attaque: (boss ? 7 : 3) + Math.floor(scale / 2),
+    defense: (boss ? 3 : 0) + Math.floor(scale / 6),
+    xp: (boss ? 14 : 4) + scale,
+    or: boss ? 18 + scale * 2 : 4 + Math.floor(scale / 2),
     boss,
-    type: name.toLowerCase().includes('démon') || name.toLowerCase().includes('azhraël') ? 'demon' : name.toLowerCase().includes('squelette') || name.toLowerCase().includes('goule') || name.toLowerCase().includes('zombie') ? 'mort-vivant' : 'normal',
+    type: name.toLowerCase().includes('démon') || name.toLowerCase().includes('azhraël') ? 'demon'
+        : name.toLowerCase().includes('noyé') || name.toLowerCase().includes('pestiféré') || name.toLowerCase().includes('esprit') ? 'mort-vivant'
+        : name.toLowerCase().includes('squelette') || name.toLowerCase().includes('goule') || name.toLowerCase().includes('zombie') || name.toLowerCase().includes('mort-vivant') ? 'mort-vivant'
+        : 'normal',
   }
 }
 
@@ -1079,7 +1097,9 @@ export default function App() {
     return Math.max(0, dmg)
   }
   function finishVictory(c) {
-    setHero(h => applyEffect(h, { xp: c.xp, or: c.or, memoire: c.boss ? 2 : 0, reputation: c.boss ? 1 : 0 }))
+    const ve = passage?.victoryEffect || {}
+    setHero(h => applyEffect(h, { xp: c.xp, or: c.or, memoire: c.boss ? 2 : 0, reputation: c.boss ? 1 : 0, ...ve }))
+    if (ve.item) addLog(`Trouvé : ${ve.item} !`)
     addLog(`Victoire contre ${c.nom}.`)
     if (pid === 300) {
       const code = `${BOOKS[bookId].code}-${hero.corruption > 45 ? 'CENDRE' : hero.memoire > 35 ? 'VOILE' : 'SURVIVANT'}-${String(hero.xp).padStart(3, '0')}`
@@ -1088,7 +1108,14 @@ export default function App() {
       setCombat(null)
       return
     }
-    // Pour les boss, aller au passage "aftermath" s'il existe (pid+1 si non visité), sinon avancer
+    // Boss du cimetière (107/108/109) → toujours §110 (crypte s'effondre)
+    if (bookId === 1 && [107, 108, 109].includes(pid)) {
+      setCombat(null); go(110); return
+    }
+    // Boss du puits (81/82) → §83 (source purifiée, victoire propre)
+    if (bookId === 1 && [81, 82].includes(pid)) {
+      setCombat(null); go(83); return
+    }
     const afterBoss = resolveTarget(pid + 1)
     setCombat(null); go(afterBoss)
   }
