@@ -64,3 +64,68 @@ h2 { margin-bottom: 0; color: #f1d08a; font-size: clamp(20px, 2.8vw, 34px); }
 .rollBox { margin-top: 22px; border: 1px solid rgba(241,195,109,.45); background: rgba(0,0,0,.22); border-radius: 24px; padding: 20px; }
 .diceGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
 .finalStats .stat { border-color: rgba(241,195,109,.35); background: #1b140e; }
+
+/* ── Jet de dés ─────────────────────────────────────────────────────────── */
+.rollResult {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  animation: rollIn .35s ease;
+}
+@keyframes rollIn {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+.roll-success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 2px solid #22c55e;
+  color: #86efac;
+}
+.roll-failure {
+  background: rgba(239, 68, 68, 0.13);
+  border: 2px solid #ef4444;
+  color: #fca5a5;
+}
+.rollTitle {
+  font-size: 1.1rem;
+  letter-spacing: .04em;
+}
+.rollDetails {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: .95rem;
+  flex-wrap: wrap;
+}
+.rollDetails .dice { font-size: 1.05rem; }
+.rollDetails .rollTotal {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.rollDetails .rollDc {
+  opacity: .7;
+  font-size: .85rem;
+}
+
+/* ── Équipement dans la sidebar ─────────────────────────────────────────── */
+.equipRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+.equipItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,.05);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: .82rem;
+}
+.equipItem .equipName { color: #f1c36d; font-weight: 600; }
+.equipItem .equipStat { color: #86efac; font-size: .78rem; }

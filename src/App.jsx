@@ -546,7 +546,7 @@ function createHero(classKey) {
   const pvMax = 20 + rolls.pv + c.mods.pv
   const manaMax = 8 + rolls.mana + Math.floor(esprit / 2) + c.mods.mana
   return {
-    classKey, nom: c.nom, rolls, force, dex, chance, chanceMax: chance, esprit, pv: pvMax, pvMax, mana: manaMax, manaMax,
+    classKey, nom: c.nom, rolls, force, dex, chance, chanceMax: chance, esprit, pv: pvMax, pvMax, mana: manaMax, manaMax, magicDotPerTurn: 0,
     xp: 0, or: 0, memoire: 0, corruption: 0, reputation: 0, niveau: 1,
     items: [...c.objets], spells: [...c.sorts], allies: [], quests: [], done: [], secrets: [], flags: {}, endings: [], visited: [],
   }
@@ -881,6 +881,56 @@ function getZoneData(bookId, zoneIndex, zone) {
   return { ...base, ...livre3[0] }
 }
 
+
+// ── Catalogue d'équipements ─────────────────────────────────────────────────
+const WEAPONS = {
+  'Poings nus':       { degats: 2, type: 'physique', desc: 'Aucune arme équipée.' },
+  'Épée brisée':      { degats: 5, type: 'physique', desc: 'Fiable mais abîmée.' },
+  'Lance de fantassin':{ degats: 6, type: 'physique', desc: 'Bonne portée.' },
+  'Hache fendue':     { degats: 6, type: 'physique', desc: 'Lourde mais puissante.' },
+  'Épée du griffon':  { degats: 8, type: 'physique', desc: 'Lame d\'officier, bien balancée.' },
+  'Épée usée':        { degats: 7, type: 'physique', desc: 'Encore utilisable.' },
+  'Dague rouillée':   { degats: 4, type: 'physique', desc: 'Légère, idéale pour la furtivité.' },
+  'Épée de l\'aurore':{ degats: 11, type: 'sacre',   desc: 'Brûle les morts-vivants (+4 vs mort-vivant/démon).' },
+  'Bâton des cendres':{ degats: 7,  type: 'magique',  desc: 'Amplifie les sorts (+2 dégâts magiques).' },
+  'Éclat du Voile':   { degats: 9,  type: 'magique',  desc: 'Dégâts magiques par tour si équipé.' },
+}
+
+const ARMORS = {
+  'Aucune':             { armor: 0,  desc: 'Pas de protection.' },
+  'Vêtements usés':     { armor: 1,  desc: 'Protection minimale.' },
+  'Armure de cuir':     { armor: 3,  desc: 'Légère, ne gêne pas les tests de Dextérité.' },
+  'Armure d\'écailles': { armor: 5,  desc: 'Bonne protection, légèrement encombrante.' },
+  'Armure de plates':   { armor: 8,  desc: 'Protection maximale. -1 aux tests de Dextérité.' },
+  'Armure de l\'aube':  { armor: 6,  desc: 'Armure bénie. Résiste aux sorts maudits.' },
+}
+
+const SHIELDS = {
+  'Aucun':              { block: 0,  desc: 'Pas de bouclier.' },
+  'Bouclier de bois':   { block: 2,  desc: 'Léger, peut se briser.' },
+  'Bouclier de fer':    { block: 4,  desc: 'Solide, protection fiable.' },
+  'Bouclier runique':   { block: 5,  desc: 'Absorbe aussi les dégâts magiques.' },
+}
+
+function getWeapon(items) {
+  for (const w of Object.keys(WEAPONS).reverse()) {
+    if (items.includes(w)) return { nom: w, ...WEAPONS[w] }
+  }
+  return { nom: 'Poings nus', ...WEAPONS['Poings nus'] }
+}
+function getArmor(items) {
+  for (const a of Object.keys(ARMORS).reverse()) {
+    if (items.includes(a)) return { nom: a, ...ARMORS[a] }
+  }
+  return { nom: 'Aucune', ...ARMORS['Aucune'] }
+}
+function getShield(items) {
+  for (const s of Object.keys(SHIELDS).reverse()) {
+    if (items.includes(s)) return { nom: s, ...SHIELDS[s] }
+  }
+  return { nom: 'Aucun', ...SHIELDS['Aucun'] }
+}
+
 function mkEnemy(bookId, id, name, boss) {
   const scale = bookId * 5 + Math.floor(id / 20)
   return {
@@ -927,9 +977,10 @@ export default function App() {
   const [savedAvailable, setSavedAvailable] = useState(false)
   const [pendingClass, setPendingClass] = useState(null)
   const [rolledHero, setRolledHero] = useState(null)
-  const [shield, setShield] = useState(false)
+  const [shieldActive, setShieldActive] = useState(false)
 
   useEffect(() => { setSavedAvailable(Boolean(localStorage.getItem(SAVE_KEY))) }, [])
+
 
   const passage = useMemo(() => generatedPassage(bookId, pid, hero), [bookId, pid, hero])
 
@@ -997,11 +1048,11 @@ export default function App() {
       setLastRoll({ a, b, bonus, stat: choice.test, dc: choice.dc, total, ok })
       addLog(`Test ${choice.test} : ${a}+${b}+${bonus} = ${total} / ${choice.dc} — ${ok ? 'réussite' : 'échec'}.`)
       if (ok) {
-        if (choice.successCombat) return setTimeout(() => startCombat(passage.enemy), 450)
-        return setTimeout(() => go(choice.success, choice.effect), 450)
+        if (choice.successCombat) return setTimeout(() => startCombat(passage.enemy), 3000)
+        return setTimeout(() => go(choice.success, choice.effect), 3000)
       }
-      if (choice.failCombat) return setTimeout(() => { addLog('Échec : la menace vous force au combat.'); startCombat(passage.enemy) }, 450)
-      setTimeout(() => go(choice.fail, null), 450)
+      if (choice.failCombat) return setTimeout(() => { addLog('Échec : la menace vous force au combat.'); startCombat(passage.enemy) }, 3000)
+      setTimeout(() => go(choice.fail, null), 3000)
       return
     }
     go(choice.goto, choice.effect)
@@ -1009,13 +1060,24 @@ export default function App() {
 
   function startCombat(enemy) { if (!enemy) { addLog('Erreur : aucun ennemi défini pour ce passage.'); return } setCombat({ ...enemy, pv: enemy.pvMax, log: [`${enemy.nom} surgit.`] }) }
   function heroDamage(spell) {
-    let bonus = Math.floor(hero.force / 2)
-    if (hero.items.includes('Épée usée')) bonus += 2
-    if (hero.items.includes('Éclat du Voile')) bonus += 4
-    if (spell) bonus = Math.floor(hero.esprit / 2) + spell.degats
-    return Math.max(1, d6() + bonus - combat.defense)
+    const weapon = getWeapon(hero.items)
+    const armor  = getArmor(hero.items)
+    const shield = getShield(hero.items)
+    if (spell) {
+      const spellBonus = hero.items.includes('Bâton des cendres') ? 2 : 0
+      const holy = spell.type === 'damageHoly' && ['demon', 'mort-vivant'].includes(combat.type)
+      return Math.max(1, d6() + Math.floor(hero.esprit / 2) + spell.degats + spellBonus + (holy ? 6 : 0) - combat.defense)
+    }
+    const sacreBonus = weapon.type === 'sacre' && ['demon', 'mort-vivant'].includes(combat.type) ? 4 : 0
+    return Math.max(1, d6() + Math.floor(hero.force / 2) + weapon.degats + sacreBonus - combat.defense)
   }
-  function enemyStrike(c) { let dmg = Math.max(1, c.attaque + d6() - Math.floor(hero.force / 3)); if (shield) { dmg = Math.ceil(dmg / 2); setShield(false) } return dmg }
+  function enemyStrike(c) {
+    const armor  = getArmor(hero.items)
+    const sh     = getShield(hero.items)
+    let dmg = Math.max(1, c.attaque + d6() - armor.armor - sh.block - Math.floor(hero.force / 3))
+    if (shieldActive) { dmg = Math.ceil(dmg / 2); setShieldActive(false) }
+    return Math.max(0, dmg)
+  }
   function finishVictory(c) {
     setHero(h => applyEffect(h, { xp: c.xp, or: c.or, memoire: c.boss ? 2 : 0, reputation: c.boss ? 1 : 0 }))
     addLog(`Victoire contre ${c.nom}.`)
@@ -1032,10 +1094,18 @@ export default function App() {
   }
   function attack() {
     const dmg = heroDamage()
-    const npv = Math.max(0, combat.pv - dmg)
+    // Dégâts magiques par tour (Éclat du Voile)
+    const dot = hero.items.includes('Éclat du Voile') ? 3 : 0
+    // Bâton des cendres : +2 dégâts magiques par tour si équipé
+    const dotBaton = hero.items.includes('Bâton des cendres') ? 2 : 0
+    const totalDot = dot + dotBaton
+    const npv = Math.max(0, combat.pv - dmg - totalDot)
     if (npv <= 0) return finishVictory(combat)
     const taken = enemyStrike(combat)
-    setCombat(c => ({ ...c, pv: npv, log: [`Vous infligez ${dmg} dégâts.`, `${c.nom} riposte : ${taken} dégâts.`] }))
+    const logLines = [`Vous infligez ${dmg} dégâts physiques.`]
+    if (totalDot > 0) logLines.push(`✨ Dégâts magiques : ${totalDot} (par tour).`)
+    logLines.push(`${combat.nom} riposte : ${taken} dégâts.`)
+    setCombat(c => ({ ...c, pv: npv, log: logLines }))
     setHero(h => ({ ...h, pv: clamp(h.pv - taken, 0, h.pvMax) }))
     if (hero.pv - taken <= 0) setTimeout(() => setPid(300), 500)
   }
@@ -1051,9 +1121,8 @@ export default function App() {
     if (!s || hero.mana < s.cout) return addLog('Mana insuffisante.')
     setHero(h => ({ ...h, mana: h.mana - s.cout }))
     if (s.type === 'heal') { setHero(h => ({ ...h, pv: clamp(h.pv + s.soin, 0, h.pvMax) })); return setCombat(c => ({ ...c, log: [`${name} : +${s.soin} PV.`] })) }
-    if (s.type === 'shield') { setShield(true); return setCombat(c => ({ ...c, log: [`${name} : prochaine attaque réduite.`] })) }
-    const holy = s.type === 'damageHoly' && ['demon', 'mort-vivant'].includes(combat.type)
-    const dmg = heroDamage(s) + (holy ? 6 : 0)
+    if (s.type === 'shield') { setShieldActive(true); return setCombat(c => ({ ...c, log: [`${name} : prochaine attaque réduite.`] })) }
+    const dmg = heroDamage(s)
     const npv = Math.max(0, combat.pv - dmg)
     if (npv <= 0) return finishVictory(combat)
     const taken = enemyStrike(combat)
@@ -1071,7 +1140,7 @@ export default function App() {
       <div className="content">
         <img className="illustration" src={art} alt="Illustration noir et blanc" />
         <article className="paper"><h3>{passage.title}</h3><p className="text">{passage.text}</p></article>
-        {lastRoll && <div className="combat"><b>Jet de dés</b><p>{lastRoll.a}+{lastRoll.b}+{lastRoll.stat} {lastRoll.bonus} = {lastRoll.total} / {lastRoll.dc} — {lastRoll.ok ? 'réussite' : 'échec'}.</p></div>}
+        {lastRoll && <div className={'rollResult ' + (lastRoll.ok ? 'roll-success' : 'roll-failure')}><div className="rollTitle">{lastRoll.ok ? '✔ Réussite' : '✘ Échec'}</div><div className="rollDetails"><span className="dice">🎲 {lastRoll.a} + {lastRoll.b}</span><span>+ {lastRoll.stat} {lastRoll.bonus}</span><span className="rollTotal">= {lastRoll.total}</span><span className="rollDc">/ {lastRoll.dc} requis</span></div></div>}
         {passage.final && !combat && <div className="combat"><p>Dernier obstacle du livre. Vous pouvez terminer ce livre en remportant le combat final.</p><button className="btn primary" onClick={() => startCombat(passage.enemy)}>Affronter {passage.enemy.nom}</button></div>}
         {!passage.final && passage.enemy && passage.blocking && !combat && (!passage.choices || passage.choices.length === 0) && <div className="combat"><p>Rencontre bloquante : vous devez résoudre cette scène avant de continuer.</p><button className="btn primary" onClick={() => startCombat(passage.enemy)}>Affronter {passage.enemy.nom}</button></div>}
         {combat && <Combat combat={combat} hero={hero} attack={attack} chanceMove={chanceMove} cast={cast} restItem={restItem} />}
@@ -1091,7 +1160,10 @@ function Combat({ combat, hero, attack, chanceMove, cast, restItem }) {
 }
 
 function Sidebar({ hero, bookId, pid, log }) {
-  return <aside className="side"><div className="card"><h3>Feuille d\'aventure</h3><b>{hero.nom}</b><Meter label="PV" value={hero.pv} max={hero.pvMax} cls="red"/><Meter label="Mana" value={hero.mana} max={hero.manaMax} cls="blue"/><div className="grid2"><Stat label="Force" value={hero.force}/><Stat label="Dextérité" value={hero.dex}/><Stat label="Chance" value={`${hero.chance}/${hero.chanceMax}`}/><Stat label="Esprit" value={hero.esprit}/></div></div><div className="card"><h3>Progression</h3><p>Livre {bookId} · Progression {pid}/300</p><Meter label="Mémoire" value={hero.memoire} max={100} cls="purple"/><Meter label="Corruption" value={hero.corruption} max={100} cls="red"/><Meter label="Réputation" value={hero.reputation + 100} max={200}/><p>Niveau {hero.niveau} · XP {hero.xp} · Or {hero.or}</p></div><Tags title="Inventaire" items={hero.items}/><Tags title="Sorts" items={hero.spells}/><Tags title="Alliés" items={hero.allies}/><Tags title="Quêtes actives" items={hero.quests}/><Tags title="Quêtes terminées" items={hero.done}/><Tags title="Secrets" items={hero.secrets}/>{hero.endings.length>0 && <div className="card"><h3>Codes de fin</h3>{hero.endings.map(e=><p className="endCode" key={e}>{e}</p>)}</div>}<div className="card"><h3>Journal</h3><div className="log">{log.map((l,i)=><p key={i}>{l}</p>)}</div></div></aside>
+  const weapon = getWeapon(hero.items)
+  const armor  = getArmor(hero.items)
+  const sh     = getShield(hero.items)
+  return <aside className="side"><div className="card"><h3>Feuille d'aventure</h3><b>{hero.nom}</b><Meter label="PV" value={hero.pv} max={hero.pvMax} cls="red"/><Meter label="Mana" value={hero.mana} max={hero.manaMax} cls="blue"/><div className="grid2"><Stat label="Force" value={hero.force}/><Stat label="Dextérité" value={hero.dex}/><Stat label="Chance" value={`${hero.chance}/${hero.chanceMax}`}/><Stat label="Esprit" value={hero.esprit}/></div></div><div className="card"><h3>Équipement</h3><div className="equipRow"><div className="equipItem"><span>⚔ <span className="equipName">{weapon.nom}</span></span><span className="equipStat">+{weapon.degats} dégâts</span></div><div className="equipItem"><span>🛡 <span className="equipName">{armor.nom}</span></span><span className="equipStat">{armor.armor} armure</span></div><div className="equipItem"><span>🔰 <span className="equipName">{sh.nom}</span></span><span className="equipStat">{sh.block} blocage</span></div></div></div><div className="card"><h3>Progression</h3><p>Livre {bookId} · Progression {pid}/300</p><Meter label="Mémoire" value={hero.memoire} max={100} cls="purple"/><Meter label="Corruption" value={hero.corruption} max={100} cls="red"/><Meter label="Réputation" value={hero.reputation + 100} max={200}/><p>Niveau {hero.niveau} · XP {hero.xp} · Or {hero.or}</p></div><Tags title="Inventaire" items={hero.items}/><Tags title="Sorts" items={hero.spells}/><Tags title="Alliés" items={hero.allies}/><Tags title="Quêtes actives" items={hero.quests}/><Tags title="Quêtes terminées" items={hero.done}/><Tags title="Secrets" items={hero.secrets}/>{hero.endings.length>0 && <div className="card"><h3>Codes de fin</h3>{hero.endings.map(e=><p className="endCode" key={e}>{e}</p>)}</div>}<div className="card"><h3>Journal</h3><div className="log">{log.map((l,i)=><p key={i}>{l}</p>)}</div></div></aside>
 }
 function Meter({ label, value, max, cls='' }) { return <div className="meter"><div className="meterRow"><span>{label}</span><span>{value}/{max}</span></div><div className="track"><div className={'fill '+cls} style={{width:pct(value,max)}} /></div></div> }
 function Stat({ label, value }) { return <div className="stat"><span>{label}</span><b>{value}</b></div> }
