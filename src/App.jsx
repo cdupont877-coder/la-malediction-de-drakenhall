@@ -250,15 +250,15 @@ Une femme nommée Mira vous montre son fils. L'enfant respire à peine. Ses vein
   add(56, { title: 'La peur gagne', zone: 'Val-Cendre', art: 'village', text: `Les survivants refusent d'ouvrir. La peur rend leurs voix dures.
 
 « On a déjà laissé entrer un homme en noir. Le lendemain, trois familles toussaient du sang. »`, choices: [ { label: 'Retenir l\'information et partir chez le guérisseur', effect: { secret: 'Un homme en noir est entré avant la peste' }, goto: 51 }, { label: 'Aller à la chapelle', goto: 54 } ] })
-  add(57, { title: 'La recette incomplète', zone: 'Val-Cendre', art: 'village', text: `Le journal détaille un remède possible : herbe blanche, eau bénite, cendre de goule.
+  add(57, { title: 'La recette incomplète', zone: 'Val-Cendre', art: 'village', text: `Le journal détaille un remède possible : herbe blanche, eau préservée de la souillure du puits, et une poignée de cendres issues d'un être que la maladie n'a pas entièrement laissé mourir.
 
-Le guérisseur n'a pas pu le terminer. Sa dernière note tremble : si je disparais, chercher sous la chapelle.`, choices: [ { label: 'Chercher l\'herbe blanche dans le jardin mort', goto: 65 }, { label: 'Demander l\'eau bénite à la chapelle', goto: 54 }, { label: 'Descendre chercher la source du mal', goto: 76 } ] })
+Le guérisseur n'a pas pu le terminer. Sa dernière note tremble : si je disparais, chercher sous la chapelle.`, choices: [ { label: 'Chercher l\'herbe blanche dans le jardin mort', goto: 65 }, { label: 'Demander l\'eau pure à la chapelle', goto: 54 }, { label: 'Chercher des cendres contaminées dans les maisons condamnées', goto: 58 }, { label: 'Descendre chercher la source du mal', goto: 76 } ] })
   add(58, { title: 'La cave remue', zone: 'Val-Cendre', art: 'village', text: `La cave sent l'humidité et la fièvre. Quelque chose gratte derrière les étagères.
 
-Un malade enfermé là s'est transformé. Il ne reste dans son regard qu'une faim confuse.`, enemy: mkEnemy(1, 58, 'Zombie malade', false), blocking: true, choices: [ { label: 'Combattre le malade', combat: true }, { label: 'L\'enfermer et remonter — test de Dextérité', test: 'dex', dc: 12, success: 57, failCombat: true } ] })
-  add(59, { title: 'Trois ingrédients', zone: 'Val-Cendre', art: 'village', text: `Vous savez ce qu'il faut chercher : une plante qui résiste à la fièvre, une eau qui n'a pas été touchée par le puits, et la cendre d'une créature déjà rongée par la maladie.
+Derrière les rayonnages renversés, une silhouette malade remue encore. Vous comprenez que les cendres nécessaires au remède ne se trouvent pas dans un foyer ordinaire.`, enemy: mkEnemy(1, 58, 'Malade revenu d’entre les morts', false), blocking: true, victoryEffect: { item: 'Cendres contaminées', secret: 'Les cendres du remède doivent venir d’un être touché par la fièvre noire' }, choices: [ { label: 'Affronter la silhouette contaminée', combat: true }, { label: 'L\'enfermer et remonter — test de Dextérité', test: 'dex', dc: 12, success: 57, failCombat: true } ] })
+  add(59, { title: 'Trois ingrédients', zone: 'Val-Cendre', art: 'village', text: `Vous savez désormais ce qu'il faut réunir : une herbe capable de résister à la fièvre noire, une eau encore pure, préservée de la souillure du puits, et une poignée de cendres provenant d'un être que la maladie n'a pas entièrement laissé mourir.
 
-Le remède ne sauvera peut-être pas tout Val-Cendre, mais il peut empêcher le village de devenir un cimetière debout.`, choices: [ { label: 'Chercher l\'herbe blanche', goto: 65 }, { label: 'Obtenir l\'eau bénite', goto: 60 }, { label: 'Descendre vers le puits pour affronter la source', goto: 76 } ] })
+Le remède ne sauvera peut-être pas tout Val-Cendre, mais il peut empêcher le village de devenir un cimetière à ciel ouvert.`, choices: [ { label: 'Chercher l\'herbe blanche dans le jardin du guérisseur', goto: 65 }, { label: 'Obtenir de l\'eau pure dans la chapelle', goto: 60 }, { label: 'Chercher des cendres contaminées parmi les maisons condamnées', goto: 58 }, { label: 'Descendre vers le puits sans préparer le remède', goto: 76 } ] })
   add(60, { title: 'La confession du prêtre', zone: 'Val-Cendre', art: 'chapel', text: `Le prêtre finit par parler.
 
 « J'ai vu un homme jeter une pierre noire dans le puits. J'ai voulu sonner l'alarme. Puis il m'a montré des morts qui marchaient derrière lui. J'ai fermé la porte de la chapelle et j'ai prié que quelqu'un d'autre soit courageux à ma place. »`, choices: [ { label: 'Lui demander l\'eau bénite', effect: { item: 'Eau bénite', secret: 'Le prêtre a vu le puits être empoisonné', reputation: 1 }, goto: 59 }, { label: 'Lui reprocher son silence', effect: { reputation: -1, memoire: 1 }, goto: 62 }, { label: 'Lui demander le passage sous la chapelle', goto: 66 } ] })
@@ -325,7 +325,7 @@ Une plainte immense remonte du puits. Lorsque le silence revient, l'air semble r
 Au-dessus, Val-Cendre respirera peut-être. Vous, moins.`, choices: [ { label: 'Remonter avec le fragment', effect: { done: 'Prendre le fragment du puits', corruption: 3, memoire: 1 }, goto: 86 } ] })
   add(85, { title: 'Val-Cendre respire', zone: 'Val-Cendre', art: 'village', text: `Lorsque vous remontez, les survivants sentent le changement avant même de comprendre. Le puits ne murmure plus.
 
-Mira serre son enfant contre elle. Le remède peut maintenant agir.`, choices: [ { label: 'Préparer le remède si vous avez les ingrédients', effect: { done: 'Sauver Val-Cendre', reputation: 3, item: 'Amulette de Mira' }, goto: 96 }, { label: 'Partir avant les remerciements', effect: { reputation: 1 }, goto: 96 } ] })
+Mira serre son enfant contre elle. Le remède peut agir, mais seulement si vous avez vraiment réuni ce que le journal demandait.`, choices: [ { label: 'Préparer le remède avec les trois ingrédients', requiresAllItems: ['Herbe blanche', 'Eau bénite', 'Cendres contaminées'], effect: { done: 'Sauver Val-Cendre', reputation: 3, item: 'Amulette de Mira', removeItems: ['Herbe blanche', 'Eau bénite', 'Cendres contaminées'] }, goto: 96 }, { label: 'Il manque des ingrédients : retourner les chercher', goto: 59 }, { label: 'Renoncer au remède et quitter le village', effect: { done: 'Val-Cendre partiellement sauvé', reputation: 1 }, goto: 96 } ] })
   add(86, { title: 'Le village sauvé à moitié', zone: 'Val-Cendre', art: 'village', text: `Le puits s'est calmé, mais une ombre demeure dans votre sac ou votre chair. Les villageois ne savent pas ce que vous avez pris.
 
 Certains survivront. D'autres rêveront encore d'eau noire.`, choices: [ { label: 'Quitter Val-Cendre avant qu\'on pose trop de questions', effect: { done: 'Calmer le puits sans le purifier', reputation: 1 }, goto: 96 } ] })
@@ -967,6 +967,7 @@ function applyEffect(h, eff = {}) {
   const n = { ...h, items: [...h.items], spells: [...h.spells], allies: [...h.allies], quests: [...h.quests], done: [...h.done], secrets: [...h.secrets], flags: { ...h.flags }, endings: [...h.endings] }
   if (eff.item) n.items = uniq(n.items, eff.item)
   if (eff.item2) n.items = uniq(n.items, eff.item2)
+  if (eff.removeItems) n.items = n.items.filter(item => !eff.removeItems.includes(item))
   if (eff.spell) n.spells = uniq(n.spells, eff.spell)
   if (eff.ally) n.allies = uniq(n.allies, eff.ally)
   if (eff.quest) n.quests = uniq(n.quests, eff.quest)
@@ -1056,7 +1057,12 @@ export default function App() {
     setLastRoll(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-  function can(choice) { return !choice.requiresItem || hero.items.includes(choice.requiresItem) }
+  function can(choice) {
+    if (choice.requiresItem && !hero.items.includes(choice.requiresItem)) return false
+    if (choice.requiresAllItems && !choice.requiresAllItems.every(item => hero.items.includes(item))) return false
+    if (choice.requiresAnyItem && !choice.requiresAnyItem.some(item => hero.items.includes(item))) return false
+    return true
+  }
   function choose(choice) {
     if (!can(choice)) return addLog('Condition non remplie.')
     if (choice.combat) return startCombat(passage.enemy)
